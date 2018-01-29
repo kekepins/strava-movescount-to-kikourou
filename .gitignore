@@ -1,0 +1,54 @@
+# Compiled class file
+*.class
+
+# Log file
+*.log
+
+# BlueJ files
+*.ctxt
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+
+ 
+# Maven
+/target/**
+*.class
+*.jar
+*.war
+*.ear
+
+# bat
+*.bat
+
+# Eclipse
+# -------
+*.classpath
+*.project
+*.settings
+/bin
+/subprojects/*/bin
+.metadata/
+
+# Gradle
+# ------
+.gradle
+/build
+/buildSrc/build
+/subprojects/*/build
+/subprojects/docs/src/samples/*/*/build
+/subprojects/internal-android-performance-testing/build-android-libs
+*.class
+target/classes/kikstrava/controller/KikStravaController.class
+target/classes/kikstrava/KikourouStravaImport.class

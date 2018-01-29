@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox prefHeight="524.0" prefWidth="624.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="kikstrava.controller.KikStravaController">
+  <children>
+    <AnchorPane maxHeight="-1.0" maxWidth="-1.0" prefHeight="500.0" prefWidth="600.0" VBox.vgrow="ALWAYS">
+         <children>
+            <ImageView fitHeight="44.0" fitWidth="266.0" layoutX="198.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@images.jpg" />
+               </image>
+            </ImageView>
+            <DatePicker fx:id="startDatePicker" layoutX="212.0" layoutY="69.0" prefHeight="25.0" prefWidth="169.0" />
+            <DatePicker fx:id="endDatePicker" layoutX="212.0" layoutY="105.0" prefHeight="25.0" prefWidth="169.0" />
+            <Label layoutX="110.0" layoutY="73.0" prefHeight="17.0" prefWidth="40.0" text="Début" />
+            <Label layoutX="116.0" layoutY="109.0" text="Fin" />
+            <Button layoutX="93.0" layoutY="431.0" mnemonicParsing="false" onMouseClicked="#onViewClicked" prefHeight="33.0" prefWidth="74.0" text="Voir" />
+            <Button fx:id="importBtn" disable="true" layoutX="179.0" layoutY="431.0" mnemonicParsing="false" onMouseClicked="#onImportClicked" prefHeight="33.0" prefWidth="67.0" text="Importer" />
+            <TableView fx:id="activitiesTableView" layoutX="5.0" layoutY="139.0" prefHeight="282.0" prefWidth="610.0" />
+         </children>
+    </AnchorPane>
+  </children>
+</VBox>
