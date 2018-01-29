@@ -18,7 +18,7 @@ stravakik.conf
 
 Avec les informations suivante :
 
-user kikourou
-psw kikourou 
-token strava
+* user kikourou (celui du site)
+* psw kikourou (celui du site) 
+* token strava (https://www.strava.com/settings/api)
 
