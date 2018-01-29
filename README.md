@@ -16,7 +16,7 @@ Il faut rajouter dans le classpath un fichier de configuration
 
 stravakik.conf
 
-Avec les information suivante :
+Avec les informations suivante :
 
 user kikourou
 psw kikourou 
