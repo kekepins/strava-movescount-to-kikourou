@@ -25,6 +25,8 @@ public class KikourouStravaImport {
 	
 	public static void main(String[] args) throws Exception {
 		
+		
+		
 		// Set proxy
 		if ( Config.getConfig().isProxy() ) {
 			System.setProperty("http.proxyHost", Config.getConfig().getProxyHost());

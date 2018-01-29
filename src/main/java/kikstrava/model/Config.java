@@ -5,6 +5,7 @@ public class Config {
 	
 	private String kikUser = "xxxxxxxxxxxx";
 	private String kikPassword = "yyyyyyyyyyyyyy";
+
 	private String stravaToken = "zzzzzzzzzzzzzzzzzz";
 	
 	private boolean isProxy = false;
@@ -70,6 +71,19 @@ public class Config {
 	public void setMaxSearch(int maxSearch) {
 		this.maxSearch = maxSearch;
 	}
+	
+	public void setKikUser(String kikUser) {
+		this.kikUser = kikUser;
+	}
+
+	public void setKikPassword(String kikPassword) {
+		this.kikPassword = kikPassword;
+	}
+
+	public void setStravaToken(String stravaToken) {
+		this.stravaToken = stravaToken;
+	}
+
 
 
 }

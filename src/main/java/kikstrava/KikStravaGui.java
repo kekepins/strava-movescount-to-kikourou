@@ -7,11 +7,14 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import kikstrava.model.Config;
+import kikstrava.service.ConfigManager;
 
 public class KikStravaGui extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		try {
+			
+			ConfigManager.init();
 			
 			// Set proxy
 			if ( Config.getConfig().isProxy() ) {
@@ -39,6 +42,7 @@ public class KikStravaGui extends Application {
 
 		} catch(Exception e) {
 			e.printStackTrace();
+			System.exit(-1);
 		}
 	}
 	

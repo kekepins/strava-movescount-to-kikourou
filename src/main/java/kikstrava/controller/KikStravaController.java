@@ -9,6 +9,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TableColumn;
@@ -160,18 +162,28 @@ public class KikStravaController implements Initializable {
      */
     @FXML
     void onImportClicked(MouseEvent event) {
+    	int countOk = 0;
     	for (StravaActivity activity : activities) {
     		if ( activity.getIsTransfer().get()) {
     			// Checked ..
     			System.out.println("Transfering " + activity.getName() + " to kikourou d+ " + activity.getTotal_elevation_gain());
     			try {
 					kikourouService.addStravaActivity(activity);
+					countOk++;
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
     			
     		}
+    	}
+    	
+    	if ( countOk > 0 ) {
+	    	Alert alert = new Alert(AlertType.INFORMATION);
+	    	alert.setTitle("Import");
+	    	alert.setHeaderText("Import dans kikourou");
+	    	alert.setContentText(countOk + " entrainement ont été correctement importé");
+	    	alert.showAndWait();
     	}
     }
 }
