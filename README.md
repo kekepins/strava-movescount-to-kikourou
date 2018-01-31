@@ -14,21 +14,21 @@ Aller sur https://www.strava.com/settings/api
 
 Remplir le formulaire :
 
-![alt tag](https://raw.githubusercontent.com/kekepins/kekepins/strava/blob/img/img/strava21.png)
+![alt tag](https://raw.githubusercontent.com/kekepins/strava/img/img/strava21.png)
 
 ## Etape 2
 
 Mettre une image bidon
 
-![alt tag](https://raw.githubusercontent.com/kekepins/kekepins/strava/blob/img/img/strava3.png)
+![alt tag](https://raw.githubusercontent.com/kekepins/strava/img/img/strava3.png)
 
-![alt tag](https://raw.githubusercontent.com/kekepins/kekepins/strava/blob/img/img/strava4.png)
+![alt tag](https://raw.githubusercontent.com/kekepins/strava/img/img/strava4.png)
 
 ## Etape 3
 
 Et voilà on a fait le plus dur on peut récupérer le précieux
 
-![alt tag](https://raw.githubusercontent.com/kekepins/kekepins/strava/blob/img/img/strava5.png)
+![alt tag](https://raw.githubusercontent.com/kekepins/strava/img/img/strava5.png)
 
 # Installation
 
