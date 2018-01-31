@@ -28,23 +28,28 @@ Mettre une image bidon
 
 Et voilà on a fait le plus dur on peut récupérer le précieux
 
-![alt tag](https://raw.githubusercontent.com/kekepins/strava/img/img/strava5.png)
+![alt tag](https://raw.githubusercontent.com/kekepins/strava/img/img/srtava5.png)
 
 # Installation
 
+## Dézipper dans un répertoire
+url 
+
+## Double clic sur : kikstrava.bat
+
+Attention avant de faire ça il faut configurer le fichier stravakik.conf
+
 # Configuration
 
-Il faut rajouter dans le classpath un fichier de configuration 
-
-stravakik.conf
+I aut éditer le dichier 
+stravakik.conf et renseigner les informations 
 
 Avec les informations suivante :
 
 * user kikourou (celui du site)
 * psw kikourou (celui du site) 
 * token strava (https://www.strava.com/settings/api)
-
-
+* si besoin on peut configurer un proxy
 
 # Pour les développeurs
 
