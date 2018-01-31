@@ -13,6 +13,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.Spinner;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableView;
@@ -44,6 +45,9 @@ public class KikStravaController implements Initializable {
     
     @FXML
     private Button importBtn;
+    
+    @FXML
+    private Spinner<Integer> maxReturnSpinner;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -126,6 +130,8 @@ public class KikStravaController implements Initializable {
 		activitiesTableView.setItems(activities);
 		activitiesTableView.setEditable(true);
 		
+		maxReturnSpinner.getValueFactory().setValue(5);
+		
 	}
 	
     @FXML
@@ -137,7 +143,7 @@ public class KikStravaController implements Initializable {
     	try {
     		LocalDate startDate = startDatePicker.getValue();
     		LocalDate endDate = endDatePicker.getValue();
-			StravaActivity[] resActivities = stravaService.searchActivities(startDate, endDate, 1, 5);
+			StravaActivity[] resActivities = stravaService.searchActivities(startDate, endDate, 1, maxReturnSpinner.getValueFactory().getValue());
 			
 			if ( resActivities != null && resActivities.length > 0) {
 				for ( StravaActivity stravaActivity : resActivities ) {
@@ -182,7 +188,7 @@ public class KikStravaController implements Initializable {
 	    	Alert alert = new Alert(AlertType.INFORMATION);
 	    	alert.setTitle("Import");
 	    	alert.setHeaderText("Import dans kikourou");
-	    	alert.setContentText(countOk + " entrainement ont été correctement importé");
+	    	alert.setContentText(countOk + " entrainements ont été correctement importés");
 	    	alert.showAndWait();
     	}
     }

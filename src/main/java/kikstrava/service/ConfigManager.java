@@ -1,17 +1,9 @@
 package kikstrava.service;
 
-import java.util.Arrays;
-import java.util.List;
-
-import org.apache.commons.configuration2.PropertiesConfiguration;
-import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
-import org.apache.commons.configuration2.builder.fluent.Parameters;
-import org.apache.commons.configuration2.ex.ConfigurationException;
-import org.apache.commons.configuration2.io.ClasspathLocationStrategy;
-import org.apache.commons.configuration2.io.CombinedLocationStrategy;
-import org.apache.commons.configuration2.io.FileLocationStrategy;
-import org.apache.commons.configuration2.io.FileSystemLocationStrategy;
-import org.apache.commons.configuration2.io.ProvidedURLLocationStrategy;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 
 import kikstrava.model.Config;
 
@@ -28,7 +20,7 @@ public class ConfigManager {
 	private final static String PROXY_PORT = "proxy.port";
 	
 	
-	public static void init() throws ConfigurationException {
+	/*public static void init() throws ConfigurationException {
 		List<FileLocationStrategy> subs = Arrays.asList(
 				  new ProvidedURLLocationStrategy(),
 				  new FileSystemLocationStrategy(),
@@ -62,5 +54,56 @@ public class ConfigManager {
 		}
 		
 		
+	}*/
+	
+	public static void init() throws Exception {
+		Properties prop = new Properties();
+		InputStream input = null;
+
+		try {
+			Config config = Config.getConfig();
+
+			input = ConfigManager.class.getClassLoader().getResourceAsStream("stravakik.conf");
+			
+			if ( input == null ) {
+				throw new Exception("Impossible de trouver le fichier stravakik.conf");
+			}
+			// load a properties file
+			prop.load(input);
+
+			// Read properties :
+			String kikUser = prop.getProperty(KIK_USER_KEY);
+			config.setKikUser(kikUser);
+			String kikPsw = prop.getProperty(KIK_PSW_KEY);
+			config.setKikPassword(kikPsw);
+			String stravaToken = prop.getProperty(STRAVA_TOKEN);
+			config.setStravaToken(stravaToken);
+			
+			if ( ( kikUser == null ) || "".equals(kikUser) || 
+				( kikPsw == null ) || "".equals(kikPsw) || 	
+				( stravaToken == null ) || "".equals(stravaToken) 
+				) {
+				throw new Exception("Une info indispensable non-trouvée dans stravakik.conf (kik.user, kik.password ou strava.token)");
+			}
+
+			String useProxy = prop.getProperty(USE_PROXY, "false");
+			boolean isUseProxy = "true".equals(useProxy);   // Boolean.getBoolean(useProxy);
+			config.setProxy(isUseProxy);
+			if (isUseProxy) {
+				String proxyUrl = prop.getProperty(PROXY_URL);
+				config.setProxyHost(proxyUrl);
+				String proxyPort = prop.getProperty(PROXY_PORT);
+				config.setProxyPort(proxyPort);
+			}
+		} finally {
+			if (input != null) {
+				try {
+					input.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
+
 }
