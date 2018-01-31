@@ -35,13 +35,13 @@ Et voilà on a fait le plus dur on peut récupérer le précieux
 ## Dézipper dans un répertoire
 url 
 
-## Double clic sur : kikstrava.bat
+## Démarrage double clic sur : kikstrava.bat
 
-Attention avant de faire ça il faut configurer le fichier stravakik.conf
+Attention avant de faire ça **il faut configurer le fichier stravakik.conf**
 
 # Configuration
 
-I aut éditer le dichier 
+I aut éditer le fichier 
 stravakik.conf et renseigner les informations 
 
 Avec les informations suivante :
@@ -50,6 +50,21 @@ Avec les informations suivante :
 * psw kikourou (celui du site) 
 * token strava (https://www.strava.com/settings/api)
 * si besoin on peut configurer un proxy
+
+# Fonctionnement
+
+Si vous êtes fort vous avez normalement réussi à lancer l'application :
+
+![alt tag](https://raw.githubusercontent.com/kekepins/strava/img/img/appli1.png)
+
+Reste plus qu'à cliquer sur le bouton et les entraiments de strava doivent apparaitre :
+
+![alt tag](https://raw.githubusercontent.com/kekepins/strava/img/img/appli2.png)
+
+On peut modifier certaines infos (validation par **Entrée**)
+Et on clique sur l'autre bouton et ça envoie dans kikourou :
+
+![alt tag](https://raw.githubusercontent.com/kekepins/strava/img/img/appli3.png)
 
 # Pour les développeurs
 
