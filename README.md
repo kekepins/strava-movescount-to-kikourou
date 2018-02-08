@@ -1,8 +1,9 @@
 # Outil d'import des entrainements de Strava ou Movescount dans kikourou (http://www.kikourou.net)
 
-Transfert des entrainements de Strava vers Kikourou.
+Transfert des entrainements de Strava ou Movescount vers Kikourou.
 
 Les données sont lues dans Strava grâce à l'api REST et envoyé dans kikourou comme le ferait un navigateur.
+Pour strava on utilise des api pas documentées mais qui permettent aussi d'accéder aux entrainements, movescount renvoie aussi des données en REST.
 
 # Comment avoir un token strava ?
 
@@ -30,10 +31,42 @@ Et voilà on a fait le plus dur on peut récupérer le précieux
 
 ![alt tag](https://raw.githubusercontent.com/kekepins/strava/img/img/srtava5.png)
 
+# Comment avoir son identifiant (userkey) movescount
+
+Pour se connecter à movescount on a besoin de son mail qui a servi a ouvrir le compte movescount, ça c'est normalement facile.
+Il faut arriver à trouver son userkey movescount, ça c'est un poil plus compliqué.
+Il faut arriver à trouver le fichier de configuration de moveslink sur son PC : **Settings.xml**
+Ce fichier est normalement ici :
+C:\Users\XXXXXXXX\AppData\Roaming\Suunto\Moveslink2\
+
+Ensuite on l'ouvre avec une éditeur de texte (notepad++ ...)
+
+Et on cherche le texte :
+```xml
+<UserKey>*****-*****-****-****-*****</UserKey>
+```
+
+Bravo vous êtes très fort, on note précieusement ce numéro.
+
+# Versions
+
+## Version 1.1
+https://github.com/kekepins/strava/raw/master/dist/kikstrava_1.1.0.zip
+
+Cette version rajoute :
+* support de movescount
+* ajout de l'url de l'entrainement source en commentaire privé de kikourou
+* les entrainements ayant la même date dans kirourou ne sont plus coché 
+
+## Version 1.0
+https://github.com/kekepins/strava/raw/master/dist/kikstrava_1.1.0.zip
+
+Première version uniquement l'import depuis strava.
+
 # Installation
 
 ## Dézipper dans un répertoire
-On télécharge l'application ici : https://github.com/kekepins/strava/raw/master/dist/kikstrava_1.0.0.zip
+On télécharge la dernière verison de l'application ici : https://github.com/kekepins/strava/raw/master/dist/kikstrava_1.1.0.zip
 
 On dézippe dans un répertoire.
 
