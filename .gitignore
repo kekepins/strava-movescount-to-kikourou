@@ -11,10 +11,9 @@
 .mtj.tmp/
 
 # Package Files #
-*.jar
+#*.jar
 *.war
 *.ear
-*.zip
 *.tar.gz
 *.rar
 
@@ -25,12 +24,12 @@ hs_err_pid*
 # Maven
 /target/**
 *.class
-*.jar
+#*.jar
 *.war
 *.ear
 
 # bat
-*.bat
+#*.bat
 
 # Eclipse
 # -------
@@ -52,3 +51,7 @@ hs_err_pid*
 *.class
 target/classes/kikstrava/controller/KikStravaController.class
 target/classes/kikstrava/KikourouStravaImport.class
+
+# custom for this project
+# -----------------------
+/release
