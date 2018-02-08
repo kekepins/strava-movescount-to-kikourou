@@ -11,7 +11,7 @@
 .mtj.tmp/
 
 # Package Files #
-*.jar
+#*.jar
 *.war
 *.ear
 *.tar.gz
@@ -24,7 +24,7 @@ hs_err_pid*
 # Maven
 /target/**
 *.class
-*.jar
+#*.jar
 *.war
 *.ear
 
