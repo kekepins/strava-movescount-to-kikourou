@@ -33,7 +33,9 @@ Et voilà on a fait le plus dur on peut récupérer le précieux
 # Installation
 
 ## Dézipper dans un répertoire
-url 
+On télécharge l'application ici : https://github.com/kekepins/strava/raw/master/dist/kikstrava_1.0.0.zip
+
+On dézippe dans un répertoire.
 
 ## Démarrage double clic sur : kikstrava.bat
 
@@ -41,14 +43,12 @@ Attention avant de faire ça **il faut configurer le fichier stravakik.conf**
 
 # Configuration
 
-I aut éditer le fichier 
-stravakik.conf et renseigner les informations 
+Il faut éditer le fichier 
+**conf/stravakik.conf** et renseigner les informations :
 
-Avec les informations suivante :
-
-* user kikourou (celui du site)
-* psw kikourou (celui du site) 
-* token strava (https://www.strava.com/settings/api)
+* kik.user : user kikourou (celui du site)
+* kik.password : psw kikourou (celui du site) 
+* strava.token : token strava (voir le début)
 * si besoin on peut configurer un proxy
 
 # Fonctionnement
