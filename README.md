@@ -73,3 +73,16 @@ Et on clique sur l'autre bouton et ça envoie dans kikourou :
 ```
 $ mvn clean package
 ```
+
+## création d'une release
+
+On s'amuse et on utilise les nouveautés de java 9 qui permet de construire des jre moins gros afin de créer un package complet d'exécution.
+Pour celà on on utilise **jlink**
+
+Exemple dans notre cas : 
+```
+jlink --module-path C:/devtools/jkdk19_64/jmods;mods --add-modules kikstrava --launcher start-app=kikstrava/kikstrava.KikStravaGui --output release --strip-debug --compress 2 --no-header-files --no-man-pages
+```
+
+NB : au préalable j'ai rajouté, compilé, et incorporé les fichiers **module-info.java**  pour toutes les librairies utilisées.
+Ces librairies sont stockées accessible dans le répertoire mods/
