@@ -3,6 +3,7 @@ package kikstrava;
 import java.time.LocalDate;
 
 import kikstrava.model.Config;
+import kikstrava.model.KikourouActivity;
 import kikstrava.model.StravaActivity;
 import kikstrava.service.KikourouService;
 import kikstrava.service.StravaService;
@@ -19,8 +20,8 @@ public class KikourouStravaImport {
 	}
 	
 	public void doImport(LocalDate startDate, LocalDate endDate) throws Exception {
-		StravaActivity[] activities = stravaService.searchActivities(startDate, endDate, 1, 100);
-		kikourouService.addStravaActivities(activities);
+		KikourouActivity[] activities = stravaService.searchActivities(startDate, endDate, 1, 100);
+		kikourouService.addActivities(activities);
 	}
 	
 	public static void main(String[] args) throws Exception {

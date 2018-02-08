@@ -9,14 +9,15 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import kikstrava.model.Config;
 import kikstrava.model.StravaActivity;
+import kikstrava.model.Stream;
 import kikstrava.model.Utils;
 
 public class StravaService {
@@ -97,7 +98,7 @@ public class StravaService {
         	System.out.println("Distance "  +  activity.getDistance());
         	System.out.println("Start date "  + activity.getStart_date_local());
         	
-        	LocalDateTime startDate = Utils.stringToLocalDateTime(activity.getStart_date_local());
+        	LocalDateTime startDate = Utils.stringInstantToLocalDateTime(activity.getStart_date_local());
         	
         	System.out.println("Start date decode "  + startDate);
         	
@@ -121,6 +122,23 @@ public class StravaService {
     	return getActivities(url);
     }
     
+    public void getGpxFile(String activityId) throws JsonParseException, JsonMappingException, IOException {
+    	 //String url = "https://www.strava.com/api/v3/activities/"+activityId+"/streams/"+"latlng,distance,altitude,time" + "?resolution=high";
+    	 String url = "https://www.strava.com/api/v3/activities/"+activityId+"/streams/"+"time,latlng" + "?resolution=high";
+    	 System.out.println(url);
+    	 
+    	 String json = doGet(url);
+    	 
+    	 Stream[] activities = objectMapper.readValue(json, Stream[].class);
+    	 
+    	 // transform streams in gpx... 
+    	 
+    	 System.out.println(json);
+    	 
+    	 
+    	
+    }
+    
     private String getSearchActivitiesUrl(LocalDate startDate, LocalDate endDate, int page, int countPerPage) {
     	String url = "https://www.strava.com/api/v3/athlete/activities?page=" + page + "&per_page=" + countPerPage;
     	
@@ -136,7 +154,26 @@ public class StravaService {
     	
     	return url;
     }
-
+    
+    
+   	public static void main( String[] args) throws Exception {
+    		
+		ConfigManager.init();
+		
+		// Set proxy
+		if ( Config.getConfig().isProxy() ) {
+			System.setProperty("http.proxyHost", Config.getConfig().getProxyHost());
+		    System.setProperty("http.proxyPort",  Config.getConfig().getProxyPort());
+			System.setProperty("https.proxyHost", Config.getConfig().getProxyHost());
+		    System.setProperty("https.proxyPort", Config.getConfig().getProxyPort());
+		}
+		
+		StravaService stravaService = new StravaService(Config.getConfig().getStravaToken());
+		StravaActivity[] activities = stravaService.searchActivities(null, null, 1, 1);
+		int id = activities[0].getId();
+		
+		stravaService.getGpxFile(""+id);
+   	}
     
 
 

@@ -8,10 +8,13 @@ import java.net.HttpCookie;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.jsoup.Connection.Method;
@@ -22,7 +25,8 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import kikstrava.model.Config;
-import kikstrava.model.StravaActivity;
+import kikstrava.model.KikourouActivity;
+import kikstrava.model.KikourouActivityImpl;
 import kikstrava.model.Utils;
 
 public class KikourouService {
@@ -33,6 +37,11 @@ public class KikourouService {
 	private final String user;
 	private final String password;
 	private boolean isConnect = false;
+	private String kikoureurId;
+	
+	private final static String FROM_LAST_YEAR = "http://www.kikourou.net/entrainement/navigation.php?nav1an=1&kikoureur=";
+	
+	//navannee=2016&navmois=12
 	
 	public KikourouService(String user, String password) {
 		this.user = user;
@@ -54,49 +63,41 @@ public class KikourouService {
 		//
 	}
 	
-	public void addStravaActivities(StravaActivity[] activities) throws Exception {
+	private  void findKiroureurId() throws Exception {
+		String html = sendGet("http://www.kikourou.net");
+		Document document = Jsoup.parse(html);
+		Elements liElts = document.select("ul#nav > li");
+		Element espacePerso = liElts.get(4);
+		Elements espacePersoUl =espacePerso.select("ul > li");
+		Element a = espacePersoUl.get(2).child(0);
+		
+		String relHref = a.attr("href"); // == "/"
+
+		int index =  relHref.indexOf("kikoureur=");
+		
+		this.kikoureurId = relHref.substring(index + 10);
+	}
+	
+	public void addActivities(KikourouActivity[] activities) throws Exception {
 		
 		if ( activities != null && activities.length > 0 ) {
 			
-			// connect to kik is necessary
-			/*if ( !isConnect ) {
-				connect();
-			}*/
-			
-			for (StravaActivity stravaActivity : activities ) {
-				/*
-				LocalDateTime startDate = Utils.stringToLocalDateTime(stravaActivity.getStart_date_local());
-				int[] elapsed = Utils.getSecondsToHMS(stravaActivity.getElapsed_time());
-				
-				addSeance(
-					startDate.getYear(), 
-					startDate.getMonthValue(), 
-					startDate.getDayOfMonth(),
-					elapsed[0], 
-					elapsed[1],
-					elapsed[2], 
-					stravaActivity.getTotal_elevation_gain() * Config.getConfig().getElevationCorrection(), 
-					stravaActivity.getDistance() / 1000., // kik is in km
-					stravaActivity.getType().getKikCode(),
-					stravaActivity.getName(),
-					"Auto included by StravatoKik " + new Date());
-				*/
-				
-				addStravaActivity(stravaActivity);
+			for (KikourouActivity stravaActivity : activities ) {
+				addActivity(stravaActivity);
 			}
-			
 		}
 		// Connect to kik
 	}
 	
-	public void addStravaActivity(StravaActivity stravaActivity) throws Exception {
+	public void addActivity(KikourouActivity activity) throws Exception {
 		// connect to kik is necessary
 		if ( !isConnect ) {
 			connect();
 		}
 		
-		LocalDateTime startDate = Utils.stringToLocalDateTime(stravaActivity.getStart_date_local());
-		int[] elapsed = Utils.getSecondsToHMS(stravaActivity.getElapsed_time());
+		LocalDateTime startDate = activity.getStartDateLocal();
+		
+		int[] elapsed = Utils.getSecondsToHMS(activity.getElapsedTime());
 		
 		addSeance(
 			startDate.getYear(), 
@@ -105,12 +106,62 @@ public class KikourouService {
 			elapsed[0], 
 			elapsed[1],
 			elapsed[2], 
-			stravaActivity.getTotal_elevation_gain() * Config.getConfig().getElevationCorrection(), 
-			stravaActivity.getDistance() / 1000., // kik is in km
-			stravaActivity.getType().getKikCode(),
-			stravaActivity.getName(),
-			"Auto included by StravatoKik " + new Date());
+			activity.getDPlus(), 
+			activity.getDistance() / 1000., // kik is in km
+			activity.getCode(),
+			activity.getName(),
+			"Importé de " + activity.getSource() + " le " + new Date() + " par kikstrava",
+			activity.getUrl());
 		
+	}
+	
+	public Map<LocalDate, KikourouActivity> searchActivities(LocalDate start, LocalDate end ) throws Exception {
+		
+		if ( !isConnect ) {
+			connect();
+		}
+		
+		if ( kikoureurId == null ) {
+			findKiroureurId();
+		}
+		
+		Map<LocalDate, KikourouActivity> result = new HashMap<>();
+		
+		try {
+			String url = FROM_LAST_YEAR  + kikoureurId;
+			String html = sendGet(url);
+			
+			Document document = Jsoup.parse(html);
+			
+			Element table = document.getElementsByClass("calendrier").first();
+			
+			Elements rows = table.select("tr");
+			
+			for (int i = 1; i < rows.size()-6; i++) { //first row is the col names so skip it.
+			    Element row = rows.get(i);
+			    Elements cols = row.select("td");
+			    String strDate = cols.get(0).text();
+			    LocalDate ldt = parseDate(strDate);
+			    
+			    System.out.println(cols.get(0).text());
+			    String desc = cols.get(1).text();
+			    System.out.println(desc); // desc
+			    System.out.println(cols.get(4).text()); // elapse
+			    int parse = parseElapse(cols.get(4).text());
+			    float distance = Float.parseFloat(cols.get(5).text());
+			    System.out.println("dist " + distance); // distance
+			    
+			    KikourouActivityImpl kikActivity  = new KikourouActivityImpl(ldt, desc, distance, parse);
+			    result.put(ldt, kikActivity);
+			    
+			}
+		}
+		catch( Throwable t ) {
+			t.printStackTrace();
+		}
+
+
+		return result;
 	}
 
 	
@@ -163,6 +214,44 @@ public class KikourouService {
 		System.out.println(response.toString());
 
 	}
+	
+	private String sendGet(String url) throws Exception {
+
+		URL obj = new URL(url);
+		HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
+
+		// Acts like a browser
+		conn.setUseCaches(false);
+		conn.setRequestMethod("GET");
+		conn.setRequestProperty("Host", "www.kikourou.net");
+		conn.setRequestProperty("User-Agent", USER_AGENT);
+		conn.setRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+		conn.setRequestProperty("Accept-Language", "fr,fr-FR;q=0.8,en-US;q=0.5,en;q=0.3");
+		conn.setRequestProperty("Upgrade-Insecure-Requests", "1");
+		conn.setRequestProperty("Connection", "keep-alive");
+		conn.setDoOutput(true);
+		conn.setDoInput(true);
+		if ( isCookie()) {
+			conn.setRequestProperty("Cookie", getCookieString());
+		}
+
+		int responseCode = conn.getResponseCode();
+		System.out.println("\nSending 'GET' request to URL : " + url);
+		System.out.println("Response Code : " + responseCode);
+
+		BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+		String inputLine;
+		StringBuffer response = new StringBuffer();
+
+		while ((inputLine = in.readLine()) != null) {
+			response.append(inputLine);
+		}
+		in.close();
+		System.out.println(response.toString());
+		
+		return response.toString();
+
+	}
 
 	
 	private String getCookieString() {
@@ -197,13 +286,12 @@ public class KikourouService {
 	
 
 
-	private void addSeance(int annee, int mois, int jour, int heure, int minute, int seconde, double deniv, double distance, int sport, String name, String descriptionPublique) throws Exception {
+	private void addSeance(int annee, int mois, int jour, int heure, int minute, int seconde, double deniv, double distance, int sport, String name, String descriptionPublique, String descriptionPrivee) throws Exception {
 		
 		// sport 24 : trail
 		// 
 		String url = "http://www.kikourou.net/entrainement/ajout.php";
 		
-		//String postParams = "annee="+ annee+ "&mois=" + mois+ "&jour=" + jour  + "&min=" + minute + "&sec=" + seconde + "&denivele=" + deniv + "&distance=" + distance + "&sport=" + sport + "&nom=" + name;
 		String postParams = 
 				encode("annee", "" + annee ) +
 				encode("mois", "" + mois ) +
@@ -240,7 +328,8 @@ public class KikourouService {
 				encode("zone4", "166") +
 				encode("zone5", "173") +
 				encode("zone5sup", "178") +
-				encode("descriptionpublique", descriptionPublique);
+				encode("descriptionpublique", descriptionPublique) +
+				encode("description", descriptionPrivee);
 				
 		
 		sendPost(url, postParams);
@@ -333,6 +422,67 @@ public class KikourouService {
 	 
 	 private String encode(String key, String value) throws UnsupportedEncodingException {
 		 return key + "=" + URLEncoder.encode(value, "ISO-8859-1") + "&";
+	 }
+	 
+	 public static void main(String[] args) throws Exception {
+		ConfigManager.init();
+		
+		// Set proxy
+		if ( Config.getConfig().isProxy() ) {
+			System.setProperty("http.proxyHost", Config.getConfig().getProxyHost());
+		    System.setProperty("http.proxyPort",  Config.getConfig().getProxyPort());
+			System.setProperty("https.proxyHost", Config.getConfig().getProxyHost());
+		    System.setProperty("https.proxyPort", Config.getConfig().getProxyPort());
+		}
+		
+		KikourouService kikService = new KikourouService(Config.getConfig().getKikUser(), Config.getConfig().getKikPassword());
+		kikService.searchActivities(null, null);
+		//kikService.connect();
+		//kikService.getKiroureurId();
+		 
+	 }
+	 
+	 private LocalDate parseDate(String date) {
+		 
+		 date = date.replace("jan", "01");
+		 date = date.replace("fév", "02");
+		 date = date.replace("mar", "03");
+		 date = date.replace("avr", "04");
+		 date = date.replace("mai", "05");
+		 date = date.replace("jun", "06");
+		 date = date.replace("jui", "07");
+		 date = date.replace("aoû", "08");
+		 date = date.replace("sep", "09");
+		 date = date.replace("oct", "10");
+		 date = date.replace("nov", "11");
+		 date = date.replace("déc", "12");
+		 DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd MM yy").withLocale(Locale.FRANCE);
+		 LocalDate dt = LocalDate.parse(date, dtf);
+
+		 return dt;
+	 }
+	 
+	 // 01h03'29''
+	 public int parseElapse(String elapse) {
+		 
+		 if ( elapse == null || "".equals(elapse )) {
+			 return 0;
+		 }
+		 elapse = elapse.replace("''", "");
+		 elapse = elapse.replace("h", ":");
+		 elapse = elapse.replace("'", ":");
+		 String[] splitted = elapse.split(":");
+		 
+		 int total = 0;
+		 int mult = 1;
+		 
+		 for ( int idx = splitted.length; idx > 0; idx--) {
+			 total += Integer.parseInt(splitted[idx-1]) * mult;
+			 mult *=60;
+		 }
+		 
+		 return total; 
+		 
 	 }
 
 }

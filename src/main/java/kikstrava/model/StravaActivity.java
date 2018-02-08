@@ -8,7 +8,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 
-public class StravaActivity {
+public class StravaActivity implements KikourouActivity {
     private int id;
     private int resource_state;
     private String external_id;
@@ -18,7 +18,7 @@ public class StravaActivity {
     private int moving_time;
     private int elapsed_time;
     private float total_elevation_gain;
-    private StravaActivityType type;
+    private ActivityType type;
     private String start_date;
     private String start_date_local;
     private String timezone;
@@ -105,10 +105,10 @@ public class StravaActivity {
 	public void setTotal_elevation_gain(float total_elevation_gain) {
 		this.total_elevation_gain = total_elevation_gain;
 	}
-	public StravaActivityType getType() {
+	public ActivityType getType() {
 		return type;
 	}
-	public void setType(StravaActivityType type) {
+	public void setType(ActivityType type) {
 		this.type = type;
 	}
 	public String getStart_date() {
@@ -119,7 +119,7 @@ public class StravaActivity {
 	}
 	
 	public String getStartDateLocalRead() {
-		LocalDateTime ld = Utils.stringToLocalDateTime(this.start_date);
+		LocalDateTime ld = Utils.stringInstantToLocalDateTime(this.start_date);
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 		return formatter.format(ld);
 	}
@@ -304,8 +304,40 @@ public class StravaActivity {
 	public void setElapseStr(String elapseStr) {
 		int second = Utils.getSecondsFromElapseStr(elapseStr);
 		elapsed_time = second;
-		//return "" + el[0] + ":" +  el[1] + ":" + el[2];
 	}
 
+	public LocalDateTime getStartDateLocal() {
+		return Utils.stringInstantToLocalDateTime(getStart_date_local());
+		//return getStart_date_local();
+	}
+	@Override
+	public int getElapsedTime() {
+		return getElapsed_time();
+	}
+	@Override
+	public float getDPlus() {
+		return getTotal_elevation_gain();
+	}
+	
+	public void setDPlus(float dplus) {
+		setTotal_elevation_gain(dplus);
+	}
 
+	@Override
+	public int getCode() {
+		return getType().getKikCode();
+	}
+	
+	@Override
+	public String getActivity() {
+		return getType().getCode();
+	}
+	@Override
+	public String getUrl() {
+		return "https://www.strava.com/activities/" + id;
+	}
+	@Override
+	public String getSource() {
+		return "Strava";
+	}
 }

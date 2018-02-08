@@ -31,7 +31,8 @@ public class KikStravaGui extends Application {
 			loader.setLocation(KikStravaGui.class.getResource("view/kikstrava.fxml"));
 			Parent root =  loader.load();
 	       
-	        Scene scene = new Scene(root, 640, 540);
+	        //Scene scene = new Scene(root, 640, 540);
+			Scene scene = new Scene(root);
 	        //scene.getStylesheets().add(NeuranetGui.class.getResource("application.css").toExternalForm());
 	    
 	        primaryStage.setTitle("Strava to kikourou");
