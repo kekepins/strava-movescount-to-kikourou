@@ -92,7 +92,7 @@ Si vous êtes fort vous avez normalement réussi à lancer l'application :
 
 ![alt tag](https://raw.githubusercontent.com/kekepins/strava/img/img/1_1_img1.png)
 
-Reste plus qu'à cliquer sur le bouton et les entraiments de strava doivent apparaitre :
+Reste plus qu'à cliquer sur le bouton et les entrainements de strava/movescount doivent apparaitre :
 
 ![alt tag](https://raw.githubusercontent.com/kekepins/strava/img/img/1_1_img2.png)
 
