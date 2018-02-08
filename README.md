@@ -1,4 +1,4 @@
-# kik-strava
+# Outil d'import des entrainements de Strava ou Movescount dans kikourou (http://www.kikourou.net)
 
 Transfert des entrainements de Strava vers Kikourou.
 
