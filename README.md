@@ -82,6 +82,8 @@ Il faut éditer le fichier
 * kik.user : user kikourou (celui du site)
 * kik.password : psw kikourou (celui du site) 
 * strava.token : token strava (voir le début)
+* movescount.email : email identifiant movescount 
+* movescount.userkey : userkey movescount (voir plus haut pour le trouver)
 * si besoin on peut configurer un proxy
 
 # Fonctionnement
