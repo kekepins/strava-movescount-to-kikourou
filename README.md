@@ -56,7 +56,7 @@ https://github.com/kekepins/strava/raw/master/dist/kikstrava_1.1.0.zip
 Cette version rajoute :
 * support de movescount
 * ajout de l'url de l'entrainement source en commentaire privé de kikourou
-* les entrainements ayant la même date dans kirourou ne sont plus coché 
+* les entrainements ayant la même date dans kirourou ne sont plus cochés 
 
 ## Version 1.0
 https://github.com/kekepins/strava/raw/master/dist/kikstrava_1.0.0.zip
