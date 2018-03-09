@@ -56,10 +56,10 @@ https://github.com/kekepins/strava/raw/master/dist/kikstrava_1.1.0.zip
 Cette version rajoute :
 * support de movescount
 * ajout de l'url de l'entrainement source en commentaire privé de kikourou
-* les entrainements ayant la même date dans kirourou ne sont plus coché 
+* les entrainements ayant la même date dans kirourou ne sont plus cochés 
 
 ## Version 1.0
-https://github.com/kekepins/strava/raw/master/dist/kikstrava_1.1.0.zip
+https://github.com/kekepins/strava/raw/master/dist/kikstrava_1.0.0.zip
 
 Première version uniquement l'import depuis strava.
 
@@ -90,16 +90,16 @@ Il faut éditer le fichier
 
 Si vous êtes fort vous avez normalement réussi à lancer l'application :
 
-![alt tag](https://raw.githubusercontent.com/kekepins/strava/img/img/appli1.png)
+![alt tag](https://raw.githubusercontent.com/kekepins/strava/img/img/1_1_img1.png)
 
-Reste plus qu'à cliquer sur le bouton et les entraiments de strava doivent apparaitre :
+Reste plus qu'à cliquer sur le bouton et les entrainements de strava/movescount doivent apparaitre :
 
-![alt tag](https://raw.githubusercontent.com/kekepins/strava/img/img/appli2.png)
+![alt tag](https://raw.githubusercontent.com/kekepins/strava/img/img/1_1_img2.png)
 
 On peut modifier certaines infos (validation par **Entrée**)
 Et on clique sur l'autre bouton et ça envoie dans kikourou :
 
-![alt tag](https://raw.githubusercontent.com/kekepins/strava/img/img/appli3.png)
+![alt tag](https://raw.githubusercontent.com/kekepins/strava/img/img/1_1_img3.png)
 
 # Pour les développeurs
 
