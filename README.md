@@ -50,6 +50,12 @@ Bravo vous êtes très fort, on note précieusement ce numéro.
 
 # Versions
 
+## Version 1.2
+https://github.com/kekepins/strava/raw/master/dist/kikstrava_1.2.0.zip
+
+* Des sports non gérés peuvent faire planter l'import (yoga, muscu ...)
+* Le nombre d'entrainements trouvés dans movescount ne correspond pas à la limite fixé
+
 ## Version 1.1
 https://github.com/kekepins/strava/raw/master/dist/kikstrava_1.1.0.zip
 
