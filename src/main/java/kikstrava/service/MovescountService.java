@@ -104,7 +104,7 @@ public class MovescountService {
 			end = start.minusDays(1);
 			start = end.minusDays(3);
 			
-			if ( (countIter > 20 ) ||	//  max queries
+			if ( (countIter > 30 ) ||	//  max queries
 				 (result.size() >= maxCount) ||// enough result
 				 (startDate != null && end.isBefore(startDate))
 				) {
@@ -121,7 +121,7 @@ public class MovescountService {
 		);
 		
 		if ( result.size() > maxCount ) {
-			result = result.subList(0, maxCount -1 );
+			result = result.subList(0, maxCount );
 		}
 		
 		return result.toArray(new MovescountActivity[result.size()]);
