@@ -12,7 +12,7 @@ public class StravaActivity implements KikourouActivity {
     private int id;
     private int resource_state;
     private String external_id;
-    private int upload_id;
+    private long upload_id;
     private String name;
     private float distance;
     private int moving_time;
@@ -69,10 +69,10 @@ public class StravaActivity implements KikourouActivity {
 	public void setExternal_id(String external_id) {
 		this.external_id = external_id;
 	}
-	public int getUpload_id() {
+	public long getUpload_id() {
 		return upload_id;
 	}
-	public void setUpload_id(int upload_id) {
+	public void setUpload_id(long upload_id) {
 		this.upload_id = upload_id;
 	}
 	public String getName() {
