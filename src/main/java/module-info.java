@@ -1,4 +1,4 @@
-module kikstrava {
+open module kikstrava {
     requires javafx.controls;
     requires jsoup;
 
@@ -14,6 +14,6 @@ module kikstrava {
     exports kikstrava.model;
     exports kikstrava.service;
 	
-	opens kikstrava.controller to javafx.fxml;
+	//opens kikstrava.controller to javafx.fxml;
 
 }

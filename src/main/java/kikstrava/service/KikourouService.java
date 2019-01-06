@@ -143,13 +143,13 @@ public class KikourouService {
 			    String strDate = cols.get(0).text();
 			    LocalDate ldt = parseDate(strDate);
 			    
-			    System.out.println(cols.get(0).text());
+			    //System.out.println(cols.get(0).text());
 			    String desc = cols.get(1).text();
-			    System.out.println(desc); // desc
-			    System.out.println(cols.get(4).text()); // elapse
+			    //System.out.println(desc); // desc
+			    //System.out.println(cols.get(4).text()); // elapse
 			    int parse = parseElapse(cols.get(4).text());
 			    float distance = Float.parseFloat(cols.get(5).text());
-			    System.out.println("dist " + distance); // distance
+			    //System.out.println("dist " + distance); // distance
 			    
 			    KikourouActivityImpl kikActivity  = new KikourouActivityImpl(ldt, desc, distance, parse);
 			    result.put(ldt, kikActivity);
@@ -185,7 +185,7 @@ public class KikourouService {
 		if ( isCookie()) {
 			conn.setRequestProperty("Cookie", getCookieString());
 		}
-		System.out.println("content-length:" + Integer.toString(postParams.length()));
+		//System.out.println("content-length:" + Integer.toString(postParams.length()));
 
 		conn.setDoOutput(true);
 		conn.setDoInput(true);
@@ -199,9 +199,9 @@ public class KikourouService {
 		int responseCode = conn.getResponseCode();
 		
 		setCookies(conn.getHeaderFields().get("Set-Cookie"));
-		System.out.println("\nSending 'POST' request to URL : " + url);
+		/*System.out.println("\nSending 'POST' request to URL : " + url);
 		System.out.println("Post parameters : " + postParams);
-		System.out.println("Response Code : " + responseCode);
+		System.out.println("Response Code : " + responseCode);*/
 
 		BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 		String inputLine;
@@ -236,8 +236,8 @@ public class KikourouService {
 		}
 
 		int responseCode = conn.getResponseCode();
-		System.out.println("\nSending 'GET' request to URL : " + url);
-		System.out.println("Response Code : " + responseCode);
+		//System.out.println("\nSending 'GET' request to URL : " + url);
+		//System.out.println("Response Code : " + responseCode);
 
 		BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 		String inputLine;
@@ -247,7 +247,7 @@ public class KikourouService {
 			response.append(inputLine);
 		}
 		in.close();
-		System.out.println(response.toString());
+		//System.out.println(response.toString());
 		
 		return response.toString();
 
@@ -412,7 +412,7 @@ public class KikourouService {
 			 for ( String cookie: cookies ) {
 				 List<HttpCookie> pcookies = HttpCookie.parse(cookie);
 				 for ( HttpCookie httpCookie : pcookies) {
-					 System.out.println("Put Cookie " + httpCookie.toString());
+					 //System.out.println("Put Cookie " + httpCookie.toString());
 					 mapCookies.put(httpCookie.getName(), httpCookie);
 				 }
 			 }

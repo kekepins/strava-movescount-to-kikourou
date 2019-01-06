@@ -91,26 +91,26 @@ public class StravaService {
        
         String json = doGet(url);
         
-        System.out.println(json);
+        //System.out.println(json);
         StravaActivity[] activities = objectMapper.readValue(json, StravaActivity[].class);
         for ( StravaActivity activity : activities ) {
-        	System.out.println("Name "  +  activity.getName());
-        	System.out.println("Distance "  +  activity.getDistance());
-        	System.out.println("Start date "  + activity.getStart_date_local());
+        	//System.out.println("Name "  +  activity.getName());
+        	//System.out.println("Distance "  +  activity.getDistance());
+        	//System.out.println("Start date "  + activity.getStart_date_local());
         	
         	LocalDateTime startDate = Utils.stringInstantToLocalDateTime(activity.getStart_date_local());
         	
-        	System.out.println("Start date decode "  + startDate);
+        	//System.out.println("Start date decode "  + startDate);
         	
-        	System.out.println("Elapse time "  + activity.getElapsed_time());
+        	//System.out.println("Elapse time "  + activity.getElapsed_time());
         	int[] elapsed = Utils.getSecondsToHMS(activity.getElapsed_time());
-        	System.out.println("Elapse hour "  + elapsed[0]);
+        	/*System.out.println("Elapse hour "  + elapsed[0]);
         	System.out.println("Elapse min "  + elapsed[1]);
         	System.out.println("Elapse s "  + elapsed[2]);
         	
         	System.out.println("Moving time (s) "  + activity.getMoving_time());
         	System.out.println("Elevation"  + activity.getTotal_elevation_gain());
-        	System.out.println("Type "  + activity.getType());
+        	System.out.println("Type "  + activity.getType());*/
         }
         
         return activities;
@@ -133,7 +133,7 @@ public class StravaService {
     	 
     	 // transform streams in gpx... 
     	 
-    	 System.out.println(json);
+    	 //System.out.println(json);
     	 
     	 
     	

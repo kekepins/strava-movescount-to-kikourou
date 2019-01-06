@@ -237,7 +237,7 @@ public class KikStravaController implements Initializable {
     	for (KikourouActivity activity : activities) {
     		if ( activity.getIsTransfer().get()) {
     			// Checked ..
-    			System.out.println("Transfering " + activity.getName() + " to kikourou d+ " + activity.getDPlus());
+    			//System.out.println("Transfering " + activity.getName() + " to kikourou d+ " + activity.getDPlus());
     			try {
 					kikourouService.addActivity(activity);
 					countOk++;

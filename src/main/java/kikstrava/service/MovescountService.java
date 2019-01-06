@@ -56,7 +56,7 @@ public class MovescountService {
 		url += "appkey=" + APP_KEY;
 		url += "&userkey=" + userKey;
 		url += "&email=" + email;
-		System.out.println(url);
+		//System.out.println(url);
 		
 		doGet(url); 
 		
@@ -144,7 +144,7 @@ public class MovescountService {
 						"Failed : HTTP error code : " + conn.getResponseCode() + " - " + conn.getResponseMessage());
 			}
 			else {
-				System.out.println("Code " + conn.getResponseCode());
+				//System.out.println("Code " + conn.getResponseCode());
 			}
 
 			BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8));
@@ -154,7 +154,7 @@ public class MovescountService {
 				sb.append(output);
 			}
 			
-			Map<String, List<String>> map = conn.getHeaderFields();
+			/*Map<String, List<String>> map = conn.getHeaderFields();
 			for (Map.Entry<String, List<String>> entry : map.entrySet()) {
 				System.out.println("Key : " + entry.getKey() +
 			                 " ,Value : " + entry.getValue());
@@ -164,7 +164,7 @@ public class MovescountService {
 			System.out.println("Content");
 			System.out.println("--------------");
 			
-			System.out.println(sb);
+			System.out.println(sb);*/
 
 			conn.disconnect();
 
