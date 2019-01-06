@@ -50,6 +50,11 @@ Bravo vous êtes très fort, on note précieusement ce numéro.
 
 # Versions
 
+## Version 1.3
+https://github.com/kekepins/strava/raw/master/dist/kikstrava_1.3.0.zip
+
+* erreur dans l'import avec strava
+
 ## Version 1.2
 https://github.com/kekepins/strava/raw/master/dist/kikstrava_1.2.0.zip
 
