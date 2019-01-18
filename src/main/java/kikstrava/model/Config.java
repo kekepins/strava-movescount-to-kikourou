@@ -8,7 +8,6 @@ public class Config {
 
 	// strava
 	// old ...
-	private String stravaToken;
 	private String stravaClientId;
 	private String stravaSecret;
 	
@@ -35,9 +34,6 @@ public class Config {
 		return kikPassword;
 	}
 
-	public String getStravaToken() {
-		return stravaToken;
-	}
 
 	public boolean isProxy() {
 		return isProxy;
@@ -87,10 +83,6 @@ public class Config {
 		this.kikPassword = kikPassword;
 	}
 
-	public void setStravaToken(String stravaToken) {
-		this.stravaToken = stravaToken;
-	}
-
 	public String getMovescountEmail() {
 		return movescountEmail;
 	}
@@ -112,7 +104,10 @@ public class Config {
 	}
 	
 	public boolean isStravaOK() {
-		return (stravaToken != null && !"".equals(stravaToken));
+		//return (stravaToken != null && !"".equals(stravaToken));
+		
+		return (stravaClientId != null && !"".equals(stravaClientId)) && 
+			 (stravaSecret != null && !"".equals(stravaSecret))	;
 	}
 
 	public String getStravaClientId() {

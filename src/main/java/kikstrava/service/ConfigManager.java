@@ -42,8 +42,8 @@ public class ConfigManager {
 			config.setKikUser(kikUser);
 			String kikPsw = prop.getProperty(KIK_PSW_KEY);
 			config.setKikPassword(kikPsw);
-			String stravaToken = prop.getProperty(STRAVA_TOKEN);
-			config.setStravaToken(stravaToken);
+			//String stravaToken = prop.getProperty(STRAVA_TOKEN);
+			//config.setStravaToken(stravaToken);
 			String stravaSecret = prop.getProperty(STRAVA_SECRET);
 			config.setStravaSecret(stravaSecret);
 			String stravaClientId = prop.getProperty(STRAVA_CLIENTID);
