@@ -53,9 +53,7 @@ Bravo vous êtes très fort, on note précieusement ce numéro.
 
 # Versions
 
-## Version 1.4
-
-## Version 1.4
+## Version 1.4 (la dernière)
 
 Cette version intégre le changement dans le mode d'authentification avec Strava (Oauth2)
 Auparavant on disposait d'un token illimité poour accéder aux données, c'est maintenant fini la rigolade.
