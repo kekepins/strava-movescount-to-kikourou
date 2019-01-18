@@ -100,11 +100,14 @@ Il faut éditer le fichier
 
 * kik.user : user kikourou (celui du site)
 * kik.password : psw kikourou (celui du site) 
+
 * strava.clientid : le code client récupéré sur le site (voir le début)
 * strava.secret : le secret récupéré sur le site (voir le début)
+
 * movescount.email : email identifiant movescount 
 * movescount.userkey : userkey movescount (voir plus haut pour le trouver)
-* si besoin on peut configurer un proxy
+
+ si besoin on peut configurer un proxy :
 * proxy= true : le proxy est activé, si sait pas ce que c'est on met rien
 * proxy.url : l'url du proxy
 * proxy.port : le port du proxy
