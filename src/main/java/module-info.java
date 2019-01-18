@@ -2,6 +2,7 @@ open module kikstrava {
     requires javafx.controls;
     requires jsoup;
 
+	requires transitive jdk.httpserver;
     requires transitive jackson.core;
     requires transitive jackson.databind;
 	requires transitive jackson.annotations;

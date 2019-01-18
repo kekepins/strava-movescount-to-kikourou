@@ -8,8 +8,6 @@ import java.util.ResourceBundle;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.sun.deploy.uitoolkit.impl.fx.HostServicesFactory;
-import com.sun.javafx.application.HostServicesDelegate;
 
 import javafx.application.HostServices;
 import javafx.beans.property.BooleanProperty;
@@ -17,7 +15,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
@@ -42,7 +39,6 @@ import kikstrava.service.LicenceEventListener;
 import kikstrava.service.MovescountService;
 import kikstrava.service.ServiceException;
 import kikstrava.service.StravaKeyLicenceServer;
-import kikstrava.service.StravaService;
 import kikstrava.service.StravaV3Service;
 
 public class KikStravaController implements Initializable, LicenceEventListener {
