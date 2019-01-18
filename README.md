@@ -32,7 +32,7 @@ Mettre une image bidon
 
 Et voilà on a fait le plus dur on peut récupérer les 2 précieuses informations
 
-![alt tag](https://raw.githubusercontent.com/kekepins/strava/img/img/srtava6.png)
+![alt tag](https://raw.githubusercontent.com/kekepins/strava/img/img/strava6.png)
 
 # Comment avoir son identifiant (userkey) movescount
 
