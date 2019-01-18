@@ -53,12 +53,12 @@ Bravo vous êtes très fort, on note précieusement ce numéro.
 
 # Versions
 
-## Version 1.4
+## Version 1.4 (la dernière)
 
-## Version 1.4
+Cette version intégre le changement dans le mode d'authentification avec Strava (Oauth2).
 
-Cette version intégre le changement dans le mode d'authentification avec Strava (Oauth2)
 Auparavant on disposait d'un token illimité poour accéder aux données, c'est maintenant fini la rigolade.
+
 La première fois qu'on accède à Strava une page web est affichée pour authoriser l'accès, il faut bien sur répondre "oui c'est ok j'ai confiance tout va bien se passer"
 NB : pour les utilisateur des versions précédentes il faut maintenant récupérer sur le site strava le clientid et le secret (vs le token) pour mettre dans le fichier de configuration.
 
@@ -100,11 +100,14 @@ Il faut éditer le fichier
 
 * kik.user : user kikourou (celui du site)
 * kik.password : psw kikourou (celui du site) 
+
 * strava.clientid : le code client récupéré sur le site (voir le début)
 * strava.secret : le secret récupéré sur le site (voir le début)
+
 * movescount.email : email identifiant movescount 
 * movescount.userkey : userkey movescount (voir plus haut pour le trouver)
-* si besoin on peut configurer un proxy
+
+ si besoin on peut configurer un proxy :
 * proxy= true : le proxy est activé, si sait pas ce que c'est on met rien
 * proxy.url : l'url du proxy
 * proxy.port : le port du proxy
