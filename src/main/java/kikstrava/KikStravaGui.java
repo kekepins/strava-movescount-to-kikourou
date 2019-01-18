@@ -6,6 +6,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import kikstrava.controller.KikStravaController;
 import kikstrava.model.Config;
 import kikstrava.service.ConfigManager;
 
@@ -30,6 +31,9 @@ public class KikStravaGui extends Application {
 			
 			loader.setLocation(KikStravaGui.class.getResource("view/kikstrava.fxml"));
 			Parent root =  loader.load();
+			
+			KikStravaController controller = loader.getController();
+			controller.setHostServices(getHostServices());
 	       
 	        //Scene scene = new Scene(root, 640, 540);
 			Scene scene = new Scene(root);

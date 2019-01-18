@@ -12,9 +12,9 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox prefHeight="591.0" prefWidth="624.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="kikstrava.controller.KikStravaController">
+<VBox prefHeight="591.0" prefWidth="624.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/8.0.161" xmlns:fx="http://javafx.com/fxml/1" fx:controller="kikstrava.controller.KikStravaController">
   <children>
-    <AnchorPane maxHeight="-1.0" maxWidth="-1.0" prefHeight="551.0" prefWidth="623.0" VBox.vgrow="ALWAYS">
+    <AnchorPane fx:id="authorizeStrava" maxHeight="-1.0" maxWidth="-1.0" prefHeight="551.0" prefWidth="623.0" VBox.vgrow="ALWAYS">
          <children>
             <ImageView fitHeight="134.0" fitWidth="307.0" layoutX="311.0" layoutY="6.0" pickOnBounds="true" preserveRatio="true">
                <image>

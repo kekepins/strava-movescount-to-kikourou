@@ -6,7 +6,11 @@ public class Config {
 	private String kikUser; 
 	private String kikPassword;
 
+	// strava
+	// old ...
 	private String stravaToken;
+	private String stravaClientId;
+	private String stravaSecret;
 	
 	private String movescountEmail;
 	private String movescountUserKey;
@@ -110,5 +114,22 @@ public class Config {
 	public boolean isStravaOK() {
 		return (stravaToken != null && !"".equals(stravaToken));
 	}
+
+	public String getStravaClientId() {
+		return stravaClientId;
+	}
+
+	public void setStravaClientId(String stravaClientId) {
+		this.stravaClientId = stravaClientId;
+	}
+
+	public String getStravaSecret() {
+		return stravaSecret;
+	}
+
+	public void setStravaSecret(String stravaSecret) {
+		this.stravaSecret = stravaSecret;
+	}
+
 
 }

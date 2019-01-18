@@ -12,6 +12,8 @@ public class ConfigManager {
 	private final static String KIK_USER_KEY = "kik.user";
 	private final static String KIK_PSW_KEY = "kik.password";
 	private final static String STRAVA_TOKEN = "strava.token";
+	private final static String STRAVA_CLIENTID = "strava.clientid";
+	private final static String STRAVA_SECRET = "strava.secret";
 	private final static String MOVESCOUNT_EMAIL = "movescount.email";
 	private final static String MOVESCOUNT_USERKEY = "movescount.userkey";
 	
@@ -42,6 +44,11 @@ public class ConfigManager {
 			config.setKikPassword(kikPsw);
 			String stravaToken = prop.getProperty(STRAVA_TOKEN);
 			config.setStravaToken(stravaToken);
+			String stravaSecret = prop.getProperty(STRAVA_SECRET);
+			config.setStravaSecret(stravaSecret);
+			String stravaClientId = prop.getProperty(STRAVA_CLIENTID);
+			config.setStravaClientId(stravaClientId);
+
 			
 			String movescountEmail = prop.getProperty(MOVESCOUNT_EMAIL);
 			config.setMovescountEmail(movescountEmail);
