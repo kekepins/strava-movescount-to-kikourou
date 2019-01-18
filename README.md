@@ -5,17 +5,20 @@ Transfert des entrainements de Strava ou Movescount vers Kikourou.
 Les données sont lues dans Strava grâce à l'api REST et envoyé dans kikourou comme le ferait un navigateur.
 Pour strava on utilise des api pas documentées mais qui permettent aussi d'accéder aux entrainements, movescount renvoie aussi des données en REST.
 
-# Comment avoir un token strava ?
+# Comment avoir configurer strava ?
 
-Pour faire marcher tout ça il faut obtenir un token Strava, ce token permet à l'application d'accéder à mes entrainements pour faire le transfert vers kikourou.
+Pour faire marcher tout ça il faut créer une application strava pour avoir le droit d'accéder aux données.
+Le but est de récupérer 2 informations le clientid et le cliensecret de l'application.
 
 ## Etape 1
 
 Aller sur https://www.strava.com/settings/api
 
-Remplir le formulaire :
+Remplir le formulaire pour créer une application :
 
 ![alt tag](https://raw.githubusercontent.com/kekepins/strava/img/img/strava21.png)
+
+Attention à bien mettre localhost:5000 c'est important.
 
 ## Etape 2
 
@@ -27,7 +30,7 @@ Mettre une image bidon
 
 ## Etape 3
 
-Et voilà on a fait le plus dur on peut récupérer le précieux
+Et voilà on a fait le plus dur on peut récupérer les 2 précieuses informations
 
 ![alt tag](https://raw.githubusercontent.com/kekepins/strava/img/img/srtava5.png)
 
@@ -50,19 +53,25 @@ Bravo vous êtes très fort, on note précieusement ce numéro.
 
 # Versions
 
+## Version 1.4
+
+## Version 1.4
+
+Cette version intégre le changement dans le mode d'authentification avec Strava (Oauth2)
+Auparavant on disposait d'un token illimité poour accéder aux données, c'est maintenant fini la rigolade.
+La première fois qu'on accède à Strava une page web est affichée pour authoriser l'accès, il faut bien sur répondre "oui c'est ok j'ai confiance tout va bien se passer"
+NB : pour les utilisateur des versions précédentes il faut maintenant récupérer sur le site strava le clientid et le secret (vs le token) pour mettre dans le fichier de configuration.
+
 ## Version 1.3
-https://github.com/kekepins/strava/raw/master/dist/kikstrava_1.3.0.zip
 
 * erreur dans l'import avec strava
 
 ## Version 1.2
-https://github.com/kekepins/strava/raw/master/dist/kikstrava_1.2.0.zip
 
 * Des sports non gérés peuvent faire planter l'import (yoga, muscu ...)
 * Le nombre d'entrainements trouvés dans movescount ne correspond pas à la limite fixé
 
 ## Version 1.1
-https://github.com/kekepins/strava/raw/master/dist/kikstrava_1.1.0.zip
 
 Cette version rajoute :
 * support de movescount
@@ -70,14 +79,13 @@ Cette version rajoute :
 * les entrainements ayant la même date dans kirourou ne sont plus coché 
 
 ## Version 1.0
-https://github.com/kekepins/strava/raw/master/dist/kikstrava_1.1.0.zip
 
 Première version uniquement l'import depuis strava.
 
 # Installation
 
 ## Dézipper dans un répertoire
-On télécharge la dernière version de l'application ici : https://github.com/kekepins/strava/raw/master/dist/kikstrava_1.3.0.zip
+On télécharge la dernière version de l'application ici : https://github.com/kekepins/strava/raw/master/dist/kikstrava_1.4.0.zip
 
 On dézippe dans un répertoire.
 
