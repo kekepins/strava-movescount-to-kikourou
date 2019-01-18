@@ -55,8 +55,10 @@ Bravo vous êtes très fort, on note précieusement ce numéro.
 
 ## Version 1.4 (la dernière)
 
-Cette version intégre le changement dans le mode d'authentification avec Strava (Oauth2)
+Cette version intégre le changement dans le mode d'authentification avec Strava (Oauth2).
+
 Auparavant on disposait d'un token illimité poour accéder aux données, c'est maintenant fini la rigolade.
+
 La première fois qu'on accède à Strava une page web est affichée pour authoriser l'accès, il faut bien sur répondre "oui c'est ok j'ai confiance tout va bien se passer"
 NB : pour les utilisateur des versions précédentes il faut maintenant récupérer sur le site strava le clientid et le secret (vs le token) pour mettre dans le fichier de configuration.
 
