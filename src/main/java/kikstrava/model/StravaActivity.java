@@ -9,13 +9,13 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 
 public class StravaActivity implements KikourouActivity {
-    private int id;
-    private int resource_state;
+    private long id;
+    private long resource_state;
     private String external_id;
     private long upload_id;
     private String name;
     private float distance;
-    private int moving_time;
+    private long moving_time;
     private int elapsed_time;
     private float total_elevation_gain;
     private ActivityType type;
@@ -26,11 +26,11 @@ public class StravaActivity implements KikourouActivity {
     private String[] end_latlng;
     private String location_city;
     private String location_state;
-    private int achievement_count;
-    private int kudos_count;
-    private int comment_count;
-    private int athlete_count;
-    private int photo_count;
+    private long achievement_count;
+    private long kudos_count;
+    private long comment_count;
+    private long athlete_count;
+    private long photo_count;
     private boolean trainer;
     private boolean commute;
     private boolean manual;
@@ -39,30 +39,25 @@ public class StravaActivity implements KikourouActivity {
     private float average_speed;
     private float max_speed;
     private float average_cadence;
-    private int average_temp;
+    private long average_temp;
     private float average_watts;
     private float kilojoules;
     private float average_heartrate;
     private float max_heartrate;
     private float calories;
-    private int truncated;
+    private long truncated;
     private boolean has_kudoed;
     
     //private boolean isTransfer = true;
     private final BooleanProperty isTransfer = new SimpleBooleanProperty(this, "isTransfer", true);
     
-	public int getId() {
+	public long getId() {
 		return id;
 	}
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
-	public int getResource_state() {
-		return resource_state;
-	}
-	public void setResource_state(int resource_state) {
-		this.resource_state = resource_state;
-	}
+
 	public String getExternal_id() {
 		return external_id;
 	}
@@ -87,18 +82,7 @@ public class StravaActivity implements KikourouActivity {
 	public void setDistance(float distance) {
 		this.distance = distance;
 	}
-	public int getMoving_time() {
-		return moving_time;
-	}
-	public void setMoving_time(int moving_time) {
-		this.moving_time = moving_time;
-	}
-	public int getElapsed_time() {
-		return elapsed_time;
-	}
-	public void setElapsed_time(int elapsed_time) {
-		this.elapsed_time = elapsed_time;
-	}
+
 	public float getTotal_elevation_gain() {
 		return total_elevation_gain;
 	}
@@ -161,36 +145,7 @@ public class StravaActivity implements KikourouActivity {
 	public void setLocation_state(String location_state) {
 		this.location_state = location_state;
 	}
-	public int getAchievement_count() {
-		return achievement_count;
-	}
-	public void setAchievement_count(int achievement_count) {
-		this.achievement_count = achievement_count;
-	}
-	public int getKudos_count() {
-		return kudos_count;
-	}
-	public void setKudos_count(int kudos_count) {
-		this.kudos_count = kudos_count;
-	}
-	public int getComment_count() {
-		return comment_count;
-	}
-	public void setComment_count(int comment_count) {
-		this.comment_count = comment_count;
-	}
-	public int getAthlete_count() {
-		return athlete_count;
-	}
-	public void setAthlete_count(int athlete_count) {
-		this.athlete_count = athlete_count;
-	}
-	public int getPhoto_count() {
-		return photo_count;
-	}
-	public void setPhoto_count(int photo_count) {
-		this.photo_count = photo_count;
-	}
+
 	public boolean isTrainer() {
 		return trainer;
 	}
@@ -239,12 +194,6 @@ public class StravaActivity implements KikourouActivity {
 	public void setAverage_cadence(float average_cadence) {
 		this.average_cadence = average_cadence;
 	}
-	public int getAverage_temp() {
-		return average_temp;
-	}
-	public void setAverage_temp(int average_temp) {
-		this.average_temp = average_temp;
-	}
 	public float getAverage_watts() {
 		return average_watts;
 	}
@@ -274,12 +223,6 @@ public class StravaActivity implements KikourouActivity {
 	}
 	public void setCalories(float calories) {
 		this.calories = calories;
-	}
-	public int getTruncated() {
-		return truncated;
-	}
-	public void setTruncated(int truncated) {
-		this.truncated = truncated;
 	}
 	public boolean isHas_kudoed() {
 		return has_kudoed;
@@ -339,5 +282,65 @@ public class StravaActivity implements KikourouActivity {
 	@Override
 	public String getSource() {
 		return "Strava";
+	}
+	public long getResource_state() {
+		return resource_state;
+	}
+	public void setResource_state(long resource_state) {
+		this.resource_state = resource_state;
+	}
+	public long getMoving_time() {
+		return moving_time;
+	}
+	public void setMoving_time(long moving_time) {
+		this.moving_time = moving_time;
+	}
+	public long getAchievement_count() {
+		return achievement_count;
+	}
+	public void setAchievement_count(long achievement_count) {
+		this.achievement_count = achievement_count;
+	}
+	public long getKudos_count() {
+		return kudos_count;
+	}
+	public void setKudos_count(long kudos_count) {
+		this.kudos_count = kudos_count;
+	}
+	public long getComment_count() {
+		return comment_count;
+	}
+	public void setComment_count(long comment_count) {
+		this.comment_count = comment_count;
+	}
+	public long getAthlete_count() {
+		return athlete_count;
+	}
+	public void setAthlete_count(long athlete_count) {
+		this.athlete_count = athlete_count;
+	}
+	public long getPhoto_count() {
+		return photo_count;
+	}
+	public void setPhoto_count(long photo_count) {
+		this.photo_count = photo_count;
+	}
+	public long getAverage_temp() {
+		return average_temp;
+	}
+	public void setAverage_temp(long average_temp) {
+		this.average_temp = average_temp;
+	}
+	public long getTruncated() {
+		return truncated;
+	}
+	public void setTruncated(long truncated) {
+		this.truncated = truncated;
+	}
+	public int getElapsed_time() {
+		return elapsed_time;
+	}
+	public void setElapsed_time(int elapsed_time) {
+		this.elapsed_time = elapsed_time;
 	}
 }
