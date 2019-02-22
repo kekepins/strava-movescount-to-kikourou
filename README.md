@@ -53,7 +53,11 @@ Bravo vous êtes très fort, on note précieusement ce numéro.
 
 # Versions
 
-## Version 1.4 (la dernière)
+## Version 1.5 (la dernière)
+
+Encore des problèmes de format de données qui changent dans Strava.
+
+## Version 1.4 
 
 Cette version intégre le changement dans le mode d'authentification avec Strava (Oauth2).
 
@@ -85,7 +89,7 @@ Première version uniquement l'import depuis strava.
 # Installation
 
 ## Dézipper dans un répertoire
-On télécharge la dernière version de l'application ici : https://github.com/kekepins/strava/raw/master/dist/kikstrava_1.4.0.zip
+On télécharge la dernière version de l'application ici : https://github.com/kekepins/strava/raw/master/dist/kikstrava_1.5.0.zip
 
 On dézippe dans un répertoire.
 
