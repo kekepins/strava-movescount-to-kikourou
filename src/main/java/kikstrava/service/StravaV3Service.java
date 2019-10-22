@@ -1,3 +1,4 @@
+
 package kikstrava.service;
 
 import java.io.BufferedReader;
@@ -67,7 +68,11 @@ public class StravaV3Service {
 		
 		if ( token == null ) {
 			// need a token
-			getToken();
+			StravaTokenInfo stravaTokenInfo = getToken();
+			
+			if ( stravaTokenInfo.getExpires_in() == 0 ) {
+				
+			}
 		}
 		
 		
@@ -105,9 +110,9 @@ public class StravaV3Service {
 
 	}
 	
-	 public String getTokenUrl(String clientId,  String clientSecret) {
+	/* public String getTokenUrl(String clientId,  String clientSecret) {
         return String.format(TOKEN_URL + "?client_id=%s&response_type=code&redirect_uri=%s&client_secret=%s", clientId, CALLBACK_URL, clientSecret);
-	}
+	}*/
 	
 
 	 /**
@@ -115,7 +120,7 @@ public class StravaV3Service {
 	  * 
 	  */
 	public String getAuthUrl() {
-		return String.format(AUTH_URL + "?client_id=%s&response_type=code&redirect_uri=%s&client_secret=%s&approval_prompt=force", clientId, CALLBACK_URL, clientSecret);
+		return String.format(AUTH_URL + "?client_id=%s&response_type=code&scope=activity:read&redirect_uri=%s&client_secret=%s&approval_prompt=force", clientId, CALLBACK_URL, clientSecret);
 	}
 	 
 
@@ -133,6 +138,12 @@ public class StravaV3Service {
 	        params.put("client_secret", this.clientSecret);
 	        params.put("code", this.code);
 	        params.put("grant_type", "authorization_code");
+	        
+	        
+	        //
+	        //params.put("scope", "read_all");
+	        params.put("scope", "activity:read");
+	        //scope=read_all&scope=activity:read_all
 
 	        StringBuilder postData = new StringBuilder();
 	        for (Map.Entry<String,Object> param : params.entrySet()) {

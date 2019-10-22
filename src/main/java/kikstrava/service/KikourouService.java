@@ -211,7 +211,7 @@ public class KikourouService {
 			response.append(inputLine);
 		}
 		in.close();
-		System.out.println(response.toString());
+		//System.out.println(response.toString());
 
 	}
 	
