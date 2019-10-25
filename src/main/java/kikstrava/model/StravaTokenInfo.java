@@ -12,7 +12,7 @@ public class StravaTokenInfo {
 	private String access_token;
 	private StravaAthlete athlete;
 	private long expires_at;
-	private LocalDate expiresDate;
+	//private LocalDate expiresDate;
 	private long expires_in;
 	private String state;
 	private String refresh_token;
@@ -41,7 +41,7 @@ public class StravaTokenInfo {
 	public void setExpires_at(long expires_at) {
 		this.expires_at = expires_at;
 		
-		expiresDate = Instant.ofEpochMilli(expires_at).atZone(ZoneId.systemDefault()).toLocalDate();
+		//expiresDate = Instant.ofEpochMilli(expires_at).atZone(ZoneId.systemDefault()).toLocalDate();
 	}
 	public String getState() {
 		return state;
@@ -61,11 +61,11 @@ public class StravaTokenInfo {
 	public void setExpires_in(long expires_in) {
 		this.expires_in = expires_in;
 	}
-	public LocalDate getExpiresDate() {
+	/*public LocalDate getExpiresDate() {
 		return expiresDate;
 	}
 	public void setExpiresDate(LocalDate expiresDate) {
 		this.expiresDate = expiresDate;
-	}
+	}*/
 	
 }
