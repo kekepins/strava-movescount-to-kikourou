@@ -95,7 +95,7 @@ Première version uniquement l'import depuis strava.
 # Installation
 
 ## Dézipper dans un répertoire
-On télécharge la dernière version de l'application ici : https://github.com/kekepins/strava/raw/master/dist/kikstrava_1.5.0.zip
+On télécharge la dernière version de l'application ici : https://github.com/kekepins/strava/raw/master/dist/kikstrava_1.6.0.zip
 
 On dézippe dans un répertoire.
 
