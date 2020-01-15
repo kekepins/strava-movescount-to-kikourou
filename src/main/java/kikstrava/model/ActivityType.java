@@ -4,7 +4,7 @@ public enum ActivityType {
 	Alpineski("alpineski", 36, 20),
 	BackcountrySki("backcountryski", 36, 20), // FIXME
 	Canoeing("canoe", 36, 20), // FIXME
-	Crossfit("crossfit", 1, 3), // FIXME
+	Crossfit("crossfit", 1, 90), // FIXME
 	Ebikeride("ebikeride", 1, -1),
 	Elliptical("eliptic", 1, -1), // FIXME
 	Hike("hike", 1, 96),
@@ -26,6 +26,7 @@ public enum ActivityType {
     Trail("trail", 25, 82),
     Swim("swim", 10, 6), 
     SwimExt("swim ext", 10, 83),
+    VTT("vtt", 4, 5),
     VirtualRide("virtualride", 3, 4),
     Walk("walk", 28, 12), 
     WeightTraining("weight", 33, -1),
