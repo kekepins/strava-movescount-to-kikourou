@@ -53,7 +53,13 @@ Bravo vous êtes très fort, on note précieusement ce numéro.
 
 # Versions
 
-## Version 1.5 (la dernière)
+## Version 1.6 (la dernière, 25 octobre 2019)
+
+Strava demande d'être plus fin dans les droits d'accés aux données sinon on a une erreur.
+Nb, si on a des problèmes on peut avant de lancer supprimer le fichier .stravacode celà déclanchera à nouveau une demande d'autorisation à Strava.
+Le plus simple est de configurer complétement l'application.
+
+## Version 1.5
 
 Encore des problèmes de format de données qui changent dans Strava.
 
@@ -89,7 +95,7 @@ Première version uniquement l'import depuis strava.
 # Installation
 
 ## Dézipper dans un répertoire
-On télécharge la dernière version de l'application ici : https://github.com/kekepins/strava/raw/master/dist/kikstrava_1.5.0.zip
+On télécharge la dernière version de l'application ici : https://github.com/kekepins/strava/raw/master/dist/kikstrava_1.6.0.zip
 
 On dézippe dans un répertoire.
 
