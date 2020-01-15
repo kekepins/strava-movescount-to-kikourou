@@ -56,7 +56,7 @@ Bravo vous êtes très fort, on note précieusement ce numéro.
 ## Version 1.6 (la dernière, 25 octobre 2019)
 
 Strava demande d'être plus fin dans les droits d'accés aux données sinon on a une erreur.
-Nb, si on a des problèmes on peut avant de lancer supprimer le fichier .stravacode celà déclanchera à nouveau une demande d'autorisation à Strava.
+Nb, si on a des problèmes on peut avant de lancer supprimer le fichier .stravacode celà déclenchera à nouveau une demande d'autorisation à Strava.
 Le plus simple est de configurer complétement l'application.
 
 ## Version 1.5
