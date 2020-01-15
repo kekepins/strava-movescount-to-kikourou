@@ -46,8 +46,8 @@ public class StravaKeyLicenceServer {
 					String code =   query.substring(idx1 + 5, idx2);
 					System.out.println("Code:" + code);
 					stravaService.setCode(code);
-					// save code for the next time 
-					stravaService.writeCurrentCode();
+					//stravaService.setTokenInfo(tokenInfo);
+					
 					// init the token
 					StravaTokenInfo tokenInfo = stravaService.getToken();
 					responseStr += "Strava authorisation OK !!!! \r\n";
@@ -57,9 +57,12 @@ public class StravaKeyLicenceServer {
 					responseStr += tokenInfo.getAthlete().getLastname() + "\r\n";
 					responseStr += tokenInfo.getAthlete().getUsername() + "\r\n";
 					
+					// save code for the next time 
+					stravaService.writeCurrentCode();
+					stravaService.writeCurrentToken(tokenInfo);
 				}
 				else {
-					responseStr = "Problème avec l'authorisation Strava";
+					responseStr = "Problème avec l'autorisation Strava";
 				}
 				
 				byte response[] = responseStr.getBytes("UTF-8");

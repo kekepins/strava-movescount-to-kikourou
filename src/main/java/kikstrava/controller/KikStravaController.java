@@ -238,7 +238,8 @@ public class KikStravaController implements Initializable, LicenceEventListener 
     		
     		if ( stravaRadioButton.isSelected() ) {
     			
-    			if  ( !stravaService.isLicenceInit() ) {
+    			if  ( !stravaService.isLicenceCodeInit() ) {
+    				// Get new strava authorisation
     				verifyStravaLicence();
     			}
     			else {

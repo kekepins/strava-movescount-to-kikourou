@@ -2,6 +2,7 @@ package kikstrava.model;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 
 /**
@@ -12,7 +13,7 @@ public class StravaTokenInfo {
 	private String access_token;
 	private StravaAthlete athlete;
 	private long expires_at;
-	//private LocalDate expiresDate;
+	private LocalDateTime expiresDate;
 	private long expires_in;
 	private String state;
 	private String refresh_token;
@@ -41,7 +42,7 @@ public class StravaTokenInfo {
 	public void setExpires_at(long expires_at) {
 		this.expires_at = expires_at;
 		
-		//expiresDate = Instant.ofEpochMilli(expires_at).atZone(ZoneId.systemDefault()).toLocalDate();
+		expiresDate = LocalDateTime.ofInstant(Instant.ofEpochSecond(expires_at), ZoneId.systemDefault());
 	}
 	public String getState() {
 		return state;
@@ -61,11 +62,16 @@ public class StravaTokenInfo {
 	public void setExpires_in(long expires_in) {
 		this.expires_in = expires_in;
 	}
-	/*public LocalDate getExpiresDate() {
+	
+	public String toString() {
+		
+		LocalDateTime expireDate =
+			    LocalDateTime.ofInstant(Instant.ofEpochSecond(expires_at), ZoneId.systemDefault());
+		
+		return "type:" + token_type + "/ac:" + access_token  + "/ea:" + expires_at + "/ed:" + expireDate + "/st:" + state +"/rt:" + refresh_token;
+	}
+	
+	public LocalDateTime getExpirationDate() {
 		return expiresDate;
 	}
-	public void setExpiresDate(LocalDate expiresDate) {
-		this.expiresDate = expiresDate;
-	}*/
-	
 }

@@ -38,22 +38,44 @@ public class ConfigManager {
 			prop.load(input);
 
 			// Read properties :
+			//--------------
+			// Kikourou
+			//-------------
 			String kikUser = prop.getProperty(KIK_USER_KEY);
-			config.setKikUser(kikUser);
-			String kikPsw = prop.getProperty(KIK_PSW_KEY);
-			config.setKikPassword(kikPsw);
-			//String stravaToken = prop.getProperty(STRAVA_TOKEN);
-			//config.setStravaToken(stravaToken);
-			String stravaSecret = prop.getProperty(STRAVA_SECRET);
-			config.setStravaSecret(stravaSecret);
-			String stravaClientId = prop.getProperty(STRAVA_CLIENTID);
-			config.setStravaClientId(stravaClientId);
-
+			if ( kikUser != null ) {
+				config.setKikUser(kikUser.trim());
+			}
 			
+			String kikPsw = prop.getProperty(KIK_PSW_KEY);
+			if ( kikPsw != null ) {
+				config.setKikPassword(kikPsw.trim());
+			}
+			
+			//--------------
+			// Strava
+			//-------------
+			String stravaSecret = prop.getProperty(STRAVA_SECRET);
+			if ( stravaSecret != null ) {
+				config.setStravaSecret(stravaSecret.trim());
+			}
+				
+			String stravaClientId = prop.getProperty(STRAVA_CLIENTID);
+			if ( stravaClientId != null ) {
+				config.setStravaClientId(stravaClientId.trim());
+			}
+			
+			//-----------
+			// Movescount
+			//-----------
 			String movescountEmail = prop.getProperty(MOVESCOUNT_EMAIL);
-			config.setMovescountEmail(movescountEmail);
+			if ( movescountEmail != null ) {
+				config.setMovescountEmail(movescountEmail.trim());
+			}
+			
 			String movescountUserKey = prop.getProperty(MOVESCOUNT_USERKEY);
-			config.setMovescountUserKey(movescountUserKey);
+			if ( movescountUserKey != null ) {
+				config.setMovescountUserKey(movescountUserKey.trim());
+			}
 
 			
 			if ( ( kikUser == null ) || "".equals(kikUser) || 
