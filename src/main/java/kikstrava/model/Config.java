@@ -104,8 +104,6 @@ public class Config {
 	}
 	
 	public boolean isStravaOK() {
-		//return (stravaToken != null && !"".equals(stravaToken));
-		
 		return (stravaClientId != null && !"".equals(stravaClientId)) && 
 			 (stravaSecret != null && !"".equals(stravaSecret))	;
 	}
