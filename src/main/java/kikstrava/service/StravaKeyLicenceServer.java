@@ -50,6 +50,7 @@ public class StravaKeyLicenceServer {
 					
 					// init the token
 					StravaTokenInfo tokenInfo = stravaService.getToken();
+					stravaService.setTokenInfo(tokenInfo);
 					responseStr += "Strava authorisation OK !!!! \r\n";
 					responseStr += "Je pense que tout devrait marcher maintenant \r\n";
 					responseStr += tokenInfo.getAccess_token() + "\r\n";

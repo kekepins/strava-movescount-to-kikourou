@@ -230,6 +230,7 @@ public class StravaV3Service {
 	 * Get a valid token from strava !!!!
 	 */
 	public StravaTokenInfo getToken() {
+		System.out.println("Get new token from strava");
 		StringBuilder json = new StringBuilder();
 
 		try {
