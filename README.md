@@ -53,6 +53,12 @@ Bravo vous êtes très fort, on note précieusement ce numéro.
 
 # Versions
 
+## Version 1.7 (la dernière, 15 janvier 2020)
+Problèmes corrigés :
+- Expiration des licences strava
+- Sports movescount mal gérés (vtt, course)
+- Lecture de la configuration caractêre espace ignoré
+
 ## Version 1.6 (la dernière, 25 octobre 2019)
 
 Strava demande d'être plus fin dans les droits d'accés aux données sinon on a une erreur.
@@ -95,7 +101,7 @@ Première version uniquement l'import depuis strava.
 # Installation
 
 ## Dézipper dans un répertoire
-On télécharge la dernière version de l'application ici : https://github.com/kekepins/strava/raw/master/dist/kikstrava_1.6.0.zip
+On télécharge la dernière version de l'application ici : https://github.com/kekepins/strava/raw/master/dist/kikstrava_1.7.0.zip
 
 On dézippe dans un répertoire.
 
