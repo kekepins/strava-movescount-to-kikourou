@@ -3,9 +3,9 @@ open module kikstrava {
     requires jsoup;
 
 	requires transitive jdk.httpserver;
-    requires transitive jackson.core;
-    requires transitive jackson.databind;
-	requires transitive jackson.annotations;
+    requires transitive com.fasterxml.jackson.core;
+    requires transitive com.fasterxml.jackson.databind;
+	requires transitive com.fasterxml.jackson.annotation;
     requires transitive javafx.base;
     requires transitive javafx.fxml;
     requires transitive javafx.graphics;

@@ -55,3 +55,4 @@ target/classes/kikstrava/KikourouStravaImport.class
 # custom for this project
 # -----------------------
 /release
+/sav
