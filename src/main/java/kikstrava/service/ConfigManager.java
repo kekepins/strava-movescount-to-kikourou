@@ -74,11 +74,11 @@ public class ConfigManager {
 
 			if ( ( kikUser == null ) || "".equals(kikUser) || 
 					( kikPsw == null ) || "".equals(kikPsw) ) {
-				throw new Exception("Info kikourou (user ou psw) non trouvé dans la conf, fichier conf/stravakik.conf");
+				throw new Exception("Info kikourou (user ou psw) non trouvÃ© dans la conf, fichier conf/stravakik.conf");
 			}
 			
 			if ( !config.isStravaOK() ) {
-				throw new Exception("Il faut configurer un accès à Strava ou un accés à movescount, fichier conf/stravakik.conf");
+				throw new Exception("Il faut configurer un accÃ¨s Ã  Strava ou un accÃ©s Ã  movescount, fichier conf/stravakik.conf");
 			}
 			
 			String useProxy = properties.getProperty(USE_PROXY, "false");

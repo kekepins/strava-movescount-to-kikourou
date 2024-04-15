@@ -6,15 +6,19 @@
     </formats>
     <files>
         <file>
-            <source>dist/kikstrava.bat</source>
+            <source>template/kikstrava.bat</source>
             <destName>kikstrava.bat</destName>
+        </file>
+        <file>
+            <source>template/stravakik.conf</source>
+            <destName>conf/stravakik.conf</destName>
+        </file>
+		<file>
+            <source>template/version.txt</source>
+            <destName>version.txt</destName>
         </file>
     </files>
     <fileSets>
-        <fileSet>
-            <directory>${project.basedir}/config</directory>
-            <outputDirectory>/config</outputDirectory>
-        </fileSet>
         <fileSet>
             <directory>${project.build.directory}/kikstrava</directory>
             <outputDirectory>/</outputDirectory>
