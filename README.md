@@ -43,11 +43,10 @@ Et voilà on a fait le plus dur on peut récupérer les 2 précieuses informatio
 
 ## Version 1.8 (la dernière, 15 avril 2024)
 
-
-
-Nouveau serveur kikourou, nouveaux problèmes
-Ajout de certains sports qui fonctionnait pas
-Suppression du support movescount
+Problèmes corrigés :
+- Nouveau serveur kikourou, nouveaux problèmes
+- Ajout de certains sports qui fonctionnaientt pas
+- Suppression du support movescount
 
 ## Version 1.7 (15 janvier 2020)
 Problèmes corrigés :
