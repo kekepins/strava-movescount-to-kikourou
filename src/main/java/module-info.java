@@ -10,6 +10,7 @@ open module kikstrava {
     requires javafx.graphics;
     requires javafx.fxml;
     requires jdk.httpserver;
+    requires jdk.crypto.ec;
 
 
 	//requires transitive jdk.httpserver;

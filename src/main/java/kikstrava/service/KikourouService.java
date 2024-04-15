@@ -359,7 +359,7 @@ public class KikourouService {
 
 	public String getSid() throws Exception {
 
-		String getRet = sendGet("https://www.kikourou.net/forum/ucp.php?mode=login");
+		//String getRet = sendGet("https://www.kikourou.net/forum/ucp.php?mode=login");
 		//System.out.println("Get ret " + getRet);
 
 		String url = "https://www.kikourou.net/forum/ucp.php?mode=login";
