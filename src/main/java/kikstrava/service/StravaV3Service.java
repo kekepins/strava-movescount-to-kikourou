@@ -75,11 +75,21 @@ public class StravaV3Service {
 		}
 		
 		// Expired or less than one hour left
-		System.out.println("Now minus 1 hour " +  LocalDateTime.now().minusHours(1));
-		System.out.println("Expiration " +  tokenInfo.getExpirationDate());
-		if ( LocalDateTime.now().minusHours(1).isAfter(tokenInfo.getExpirationDate()) )  {
+		System.out.println("[Strava] Now minus 1 hour " +  LocalDateTime.now().minusHours(2));
+		System.out.println("[Strava token Expiration] " +  tokenInfo.getExpirationDate());
+
+		LocalDateTime expirationDate = tokenInfo.getExpirationDate();
+
+		System.out.println("[Strava token Expiration] " + expirationDate.getYear()  + "|" + expirationDate.getMonthValue() + "|" + expirationDate.getDayOfMonth() + "|" + expirationDate.getHour() + "|" + expirationDate.getMinute() + "|" + expirationDate.getSecond()  );
+		System.out.println("Now:" + LocalDateTime.now().getYear()  + "|" + LocalDateTime.now().getMonthValue() + "|" + LocalDateTime.now().getDayOfMonth() + "|" + LocalDateTime.now().getHour() + "|" + LocalDateTime.now().getMinute() + "|" + LocalDateTime.now().getSecond()  );
+
+		if ( expirationDate.isBefore(LocalDateTime.now() )) {
+		// check if token is expired or is about to expire
+
+
+		//if ( LocalDateTime.now().minusHours(2).isAfter(tokenInfo.getExpirationDate()) )  {
 			// should update
-			System.out.println("Token expired " + tokenInfo.getExpirationDate());
+			System.out.println("[Strava] Token expired!!! " + tokenInfo.getExpirationDate());
 			
 			tokenInfo = updateToken();
 			
@@ -101,7 +111,8 @@ public class StravaV3Service {
 			  -d client_secret=ReplaceWithClientSecret \
 			  -d grant_type=refresh_token \
 			  -d refresh_token=ReplaceWithRefreshToken*/
-			  
+
+		System.out.println("[Strava] Update token");
 		StringBuilder json = new StringBuilder();
 
 		try {
@@ -150,7 +161,7 @@ public class StravaV3Service {
 					tokenInfo =  objectMapper.readValue(json.toString(), StravaTokenInfo.class);
 					//token = tokenInfo.getAccess_token();
 					
-					System.out.println("New refresh Token: " + tokenInfo);
+					System.out.println("[Stava] New refresh Token: " + tokenInfo);
 				}
 				
 				return tokenInfo;

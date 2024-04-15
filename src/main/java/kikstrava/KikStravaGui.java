@@ -16,9 +16,13 @@ public class KikStravaGui extends Application {
 		try {
 			
 			ConfigManager.init();
+
+			//System.setProperty("java.net.preferIPv4Stack", "true");
 			
 			// Set proxy
 			if ( Config.getConfig().isProxy() ) {
+
+				System.out.println("Setting proxy " + Config.getConfig().getProxyHost() + ":" + Config.getConfig().getProxyPort());
 				System.setProperty("http.proxyHost", Config.getConfig().getProxyHost());
 			    System.setProperty("http.proxyPort",  Config.getConfig().getProxyPort());
 				System.setProperty("https.proxyHost", Config.getConfig().getProxyHost());

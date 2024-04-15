@@ -1,0 +1,23 @@
+<assembly>
+    <id>bin</id>
+    <baseDirectory>/</baseDirectory>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <files>
+        <file>
+            <source>dist/kikstrava.bat</source>
+            <destName>kikstrava.bat</destName>
+        </file>
+    </files>
+    <fileSets>
+        <fileSet>
+            <directory>${project.basedir}/config</directory>
+            <outputDirectory>/config</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>${project.build.directory}/kikstrava</directory>
+            <outputDirectory>/</outputDirectory>
+        </fileSet>
+    </fileSets>
+</assembly>

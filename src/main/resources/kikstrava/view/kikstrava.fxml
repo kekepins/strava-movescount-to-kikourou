@@ -1,24 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.DatePicker?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.RadioButton?>
-<?import javafx.scene.control.Spinner?>
-<?import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory?>
-<?import javafx.scene.control.TableView?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
 
-<VBox prefHeight="591.0" prefWidth="624.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/8.0.161" xmlns:fx="http://javafx.com/fxml/1" fx:controller="kikstrava.controller.KikStravaController">
+<VBox prefHeight="591.0" prefWidth="624.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="kikstrava.controller.KikStravaController">
   <children>
     <AnchorPane fx:id="authorizeStrava" maxHeight="-1.0" maxWidth="-1.0" prefHeight="551.0" prefWidth="623.0" VBox.vgrow="ALWAYS">
          <children>
-            <ImageView fitHeight="134.0" fitWidth="307.0" layoutX="311.0" layoutY="6.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fitHeight="106.0" fitWidth="409.0" layoutX="168.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@images.jpg" />
+                  <Image url="@tittre_img.jpg" />
                </image>
             </ImageView>
             <DatePicker fx:id="startDatePicker" layoutX="92.0" layoutY="127.0" prefHeight="25.0" prefWidth="169.0" />
@@ -34,22 +26,6 @@
                   </valueFactory>
             </Spinner>
             <Label layoutX="368.0" layoutY="168.0" text="Max" />
-            <RadioButton fx:id="stravaRadioButton" layoutX="93.0" layoutY="28.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="114.0" text="Strava">
-               <graphic>
-                  <ImageView fitHeight="29.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@strava_small.jpg" />
-                     </image>
-                  </ImageView>
-               </graphic></RadioButton>
-            <RadioButton fx:id="movescountRadioButton" layoutX="92.0" layoutY="58.0" mnemonicParsing="false" prefHeight="49.0" prefWidth="156.0" text="Movescount">
-               <graphic>
-                  <ImageView fitHeight="25.0" fitWidth="38.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@movescount_small.jpg" />
-                     </image>
-                  </ImageView>
-               </graphic></RadioButton>
          </children>
     </AnchorPane>
   </children>

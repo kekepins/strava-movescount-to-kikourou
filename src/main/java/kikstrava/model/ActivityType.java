@@ -1,27 +1,27 @@
 package kikstrava.model;
 
 public enum ActivityType {
-	Alpineski("alpineski", 36, 20),
-	BackcountrySki("backcountryski", 36, 20), // FIXME
+	AlpineSki("alpineski", 36, 20),
+	BackcountrySki("backcountryski", 31, 20), // FIXME
 	Canoeing("canoe", 36, 20), // FIXME
 	Crossfit("crossfit", 1, 90), // FIXME
-	Ebikeride("ebikeride", 1, -1),
+	EBikeRide("ebikeride", 39, -1),
 	Elliptical("eliptic", 1, -1), // FIXME
 	Hike("hike", 1, 96),
-	Iceskate("iceskate", 1, 70),
-	Inlineskate("inlineskate", 1, 8),
+	IceSkate("iceskate", 1, 70),
+	InlineSkate("inlineskate", 1, 8),
 	Kayaking("kayak", 1, -1), // FIXME 
 	Kitesurf("kitesurf", 1, -1), // FIXME
-	NordicSki("NordicSki", 13, 22),
+	NordicSki("nordicski", 13, 22),
 	Ride("ride", 3, 4),
 	RockClimbing("rockclimbing", 1,-1), // FIXME
-	Rollerski("rollerski", 5, 88),
+	RollerSki("rollerski", 5, 88),
 	Rowing("rameur", 1, -1),
     Run("run", 1, 3), 
     Snowboard("snowboard", 36, 21), 
     Snowshoe("raquette",  36, 85), 
     StairStepper("stairstepper", 1, -1),
-    StandUpPaddling("standup", 1, -1),
+	StandUpPaddling("standup", 1, -1),
     Surfing("surfing", 1, -1),
     Trail("trail", 25, 82),
     Swim("swim", 10, 6), 

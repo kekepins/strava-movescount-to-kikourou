@@ -183,15 +183,12 @@ public class MovescountService {
 		
 		// Set proxy
 		if ( Config.getConfig().isProxy() ) {
+			System.out.println("Setting proxy " + Config.getConfig().getProxyHost() + ":" + Config.getConfig().getProxyPort());
 			System.setProperty("http.proxyHost", Config.getConfig().getProxyHost());
 		    System.setProperty("http.proxyPort",  Config.getConfig().getProxyPort());
 			System.setProperty("https.proxyHost", Config.getConfig().getProxyHost());
 		    System.setProperty("https.proxyPort", Config.getConfig().getProxyPort());
 		}
-		
-		MovescountService movescountService = new MovescountService(Config.getConfig().getMovescountEmail(), Config.getConfig().getMovescountEmail());
-		//movescountService.login();
-		movescountService.searchActivities(null, null, 1);
 
 	}
 	

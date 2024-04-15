@@ -34,32 +34,21 @@ Et voilà on a fait le plus dur on peut récupérer les 2 précieuses informatio
 
 ![alt tag](https://raw.githubusercontent.com/kekepins/strava/img/img/strava6.png)
 
-# Comment avoir son identifiant (userkey) movescount
-
-Pour se connecter à movescount on a besoin de son mail qui a servi a ouvrir le compte movescount, ça c'est normalement facile.
-Il faut arriver à trouver son userkey movescount, ça c'est un poil plus compliqué.
-Il faut arriver à trouver le fichier de configuration de moveslink sur son PC : **Settings.xml**
-Ce fichier est normalement ici :
-C:\Users\XXXXXXXX\AppData\Roaming\Suunto\Moveslink2\
-
-Ensuite on l'ouvre avec une éditeur de texte (notepad++ ...)
-
-Et on cherche le texte :
-```xml
-<UserKey>*****-*****-****-****-*****</UserKey>
-```
-
-Bravo vous êtes très fort, on note précieusement ce numéro.
 
 # Versions
 
-## Version 1.7 (la dernière, 15 janvier 2020)
+## Version 1.8 (la dernière, 15 avril 2024)
+Nouveau serveur kikourou, nouveaux problèmes
+Ajout de certains sports qui fonctionnait pas
+Suppression du support movescount
+
+## Version 1.7 (15 janvier 2020)
 Problèmes corrigés :
 - Expiration des licences strava
 - Sports movescount mal gérés (vtt, course)
 - Lecture de la configuration caractêre espace ignoré
 
-## Version 1.6 (la dernière, 25 octobre 2019)
+## Version 1.6 (25 octobre 2019)
 
 Strava demande d'être plus fin dans les droits d'accés aux données sinon on a une erreur.
 Nb, si on a des problèmes on peut avant de lancer supprimer le fichier .stravacode celà déclenchera à nouveau une demande d'autorisation à Strava.
@@ -120,11 +109,8 @@ Il faut éditer le fichier
 * strava.clientid : le code client récupéré sur le site (voir le début)
 * strava.secret : le secret récupéré sur le site (voir le début)
 
-* movescount.email : email identifiant movescount 
-* movescount.userkey : userkey movescount (voir plus haut pour le trouver)
-
  si besoin on peut configurer un proxy :
-* proxy= true : le proxy est activé, si sait pas ce que c'est on met rien
+* proxy= true/false : le proxy est activé, si sait pas ce que c'est on met rien (valeur false)
 * proxy.url : l'url du proxy
 * proxy.port : le port du proxy
 
@@ -148,18 +134,13 @@ Et on clique sur l'autre bouton et ça envoie dans kikourou :
 ## build
 
 ```
-$ mvn clean package
+$  mvn javafx:jlink package
 ```
 
-## création d'une release
+Si certains veulent compiler sur autre chose que windows, il doit falloir changer dans le fichier pom.xml
 
-On s'amuse et on utilise les nouveautés de java 9 qui permet de construire des jre moins gros afin de créer un package complet d'exécution.
-Pour celà on on utilise **jlink**
-
-Exemple dans notre cas : 
 ```
-jlink --module-path C:/devtools/jkdk19_64/jmods;mods --add-modules kikstrava --launcher start-app=kikstrava/kikstrava.KikStravaGui --output release --strip-debug --compress 2 --no-header-files --no-man-pages
-```
+		<platform>win</platform>
+```	
 
-NB : au préalable j'ai rajouté, compilé, et incorporé les fichiers **module-info.java**  pour toutes les librairies utilisées.
-Ces librairies sont stockées accessible dans le répertoire mods/
+On peut tenter de mettre mac ou linux, aucune idée si ça marche.

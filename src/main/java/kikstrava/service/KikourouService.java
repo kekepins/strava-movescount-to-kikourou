@@ -4,33 +4,55 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.net.HttpCookie;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
+import java.net.*;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import org.jsoup.Connection.Method;
-import org.jsoup.Connection.Response;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
+import java.util.*;
 
 import kikstrava.model.Config;
 import kikstrava.model.KikourouActivity;
 import kikstrava.model.KikourouActivityImpl;
 import kikstrava.model.Utils;
+import org.jsoup.Connection;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
+import javax.net.ssl.*;
 
 public class KikourouService {
-	private final static String USER_AGENT = "Mozilla/5.0";
+
+	static private SSLSocketFactory socketFactory() {
+		TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
+
+			public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+				return new X509Certificate[0];
+			}
+
+			@Override
+			public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
+			}
+
+			public void checkServerTrusted(X509Certificate[] certs, String authType) {
+			}
+		}};
+
+		try {
+			SSLContext sslContext = SSLContext.getInstance("SSL");
+			sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
+			SSLSocketFactory result = sslContext.getSocketFactory();
+
+			return result;
+		} catch (Exception e) {
+			throw new RuntimeException("Failed to create a SSL socket factory", e);
+		}
+	}
+
+	private final static String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36";
 	
 	private Map<String, HttpCookie> mapCookies = new HashMap<>();
 	
@@ -39,7 +61,7 @@ public class KikourouService {
 	private boolean isConnect = false;
 	private String kikoureurId;
 	
-	private final static String FROM_LAST_YEAR = "http://www.kikourou.net/entrainement/navigation.php?nav1an=1&kikoureur=";
+	private final static String FROM_LAST_YEAR = "https://www.kikourou.net/entrainement/navigation.php?nav1an=1&kikoureur=";
 	
 	//navannee=2016&navmois=12
 	
@@ -49,36 +71,49 @@ public class KikourouService {
 	}
 	
 	private void connect() throws Exception {
-		
+
 		// Get sid 
 		String sid = getSid();
+
+		System.out.println("Connect kikourou with sid [" + sid + "]");
+
+		if ( sid == null ) {
+			throw new Exception("Impossible de rÃ©cupÃ©rer le sid");
+		}
 		
 		// Init sessions cookies
-		String url = "http://www.kikourou.net/forum/ucp.php?mode=login";
-		String postParams = "username="+ user+ "&password=" + password + "&sid=" + sid + "&login=connection";
-		sendPost(url, postParams);
-		
+		String url =  "https://www.kikourou.net/forum/ucp.php?mode=login";
+
+		System.out.println("User " + user + " password " + password );
+		// url encode
+		String postParams = "username=" + URLEncoder.encode(user, "UTF-8") + "&password=" + URLEncoder.encode(password, "UTF-8") + "&login=Connexion&sid=" + sid;
+
+		System.out.println("Post params " + postParams);
+
+		String result = sendPost(url, postParams);
+		//System.out.println("Connect return");
+		//System.out.println(result);
+
 		isConnect = true;
-		
-		//
 	}
 	
 	private  void findKiroureurId() throws Exception {
-		String html = sendGet("http://www.kikourou.net");
+		String html = sendGet("https://www.kikourou.net");
 		Document document = Jsoup.parse(html);
 		Elements liElts = document.select("ul#nav > li");
+
 		Element espacePerso = liElts.get(4);
 		Elements espacePersoUl =espacePerso.select("ul > li");
-		Element a = espacePersoUl.get(2).child(0);
-		
-		String relHref = a.attr("href"); // == "/"
 
+		Element a = espacePersoUl.get(2).child(0);
+		String relHref = a.attr("href"); // == "/"
 		int index =  relHref.indexOf("kikoureur=");
-		
 		this.kikoureurId = relHref.substring(index + 10);
+
+		System.out.println("Kikoureur id found [" + kikoureurId + "]");
 	}
 	
-	public void addActivities(KikourouActivity[] activities) throws Exception {
+	/*public void addActivities(KikourouActivity[] activities) throws Exception {
 		
 		if ( activities != null && activities.length > 0 ) {
 			
@@ -87,7 +122,7 @@ public class KikourouService {
 			}
 		}
 		// Connect to kik
-	}
+	}*/
 	
 	public void addActivity(KikourouActivity activity) throws Exception {
 		// connect to kik is necessary
@@ -110,13 +145,14 @@ public class KikourouService {
 			activity.getDistance() / 1000., // kik is in km
 			activity.getCode(),
 			activity.getName(),
-			"Importé de " + activity.getSource() + " le " + new Date() + " par kikstrava",
+			"ImportÃ© de " + activity.getSource() + " le " + new Date() + " par kikstrava",
 			activity.getUrl());
 		
 	}
 	
 	public Map<LocalDate, KikourouActivity> searchActivities(LocalDate start, LocalDate end ) throws Exception {
-		
+
+		System.out.println("Search activities " + start + " " + end);
 		if ( !isConnect ) {
 			connect();
 		}
@@ -130,30 +166,33 @@ public class KikourouService {
 		try {
 			String url = FROM_LAST_YEAR  + kikoureurId;
 			String html = sendGet(url);
-			
+
+			//System.println("html " + html);
+
 			Document document = Jsoup.parse(html);
-			
+
 			Element table = document.getElementsByClass("calendrier").first();
-			
-			Elements rows = table.select("tr");
-			
-			for (int i = 1; i < rows.size()-6; i++) { //first row is the col names so skip it.
-			    Element row = rows.get(i);
-			    Elements cols = row.select("td");
-			    String strDate = cols.get(0).text();
-			    LocalDate ldt = parseDate(strDate);
-			    
-			    //System.out.println(cols.get(0).text());
-			    String desc = cols.get(1).text();
-			    //System.out.println(desc); // desc
-			    //System.out.println(cols.get(4).text()); // elapse
-			    int parse = parseElapse(cols.get(4).text());
-			    float distance = Float.parseFloat(cols.get(5).text());
-			    //System.out.println("dist " + distance); // distance
-			    
-			    KikourouActivityImpl kikActivity  = new KikourouActivityImpl(ldt, desc, distance, parse);
-			    result.put(ldt, kikActivity);
-			    
+
+			if ( table != null ) {
+
+				Elements rows = table.select("tr");
+
+				for (int i = 1; i < rows.size()-6; i++) { //first row is the col names so skip it.
+					Element row = rows.get(i);
+					Elements cols = row.select("td");
+					String strDate = cols.get(0).text();
+					LocalDate ldt = parseDate(strDate);
+
+					//System.out.println(cols.get(0).text());
+					String desc = cols.get(1).text();
+					int parse = parseElapse(cols.get(4).text());
+					float distance = Float.parseFloat(cols.get(5).text());
+					//System.out.println("dist " + distance); // distance
+
+					KikourouActivityImpl kikActivity  = new KikourouActivityImpl(ldt, desc, distance, parse);
+					result.put(ldt, kikActivity);
+
+				}
 			}
 		}
 		catch( Throwable t ) {
@@ -166,20 +205,37 @@ public class KikourouService {
 
 	
 
-	private void sendPost(String url, String postParams) throws Exception {
+	private String sendPost(String url, String postParams) throws Exception {
+
+		SSLContext ctx = SSLContext.getInstance("TLS");
+		ctx.init(new KeyManager[0], new TrustManager[]{new TrustAnyTrustManager()}, new java.security.SecureRandom());
+		//SSLContext.setDefault(ctx);
+
+		//System.out.println("Post request to " + url);
+		//System.out.println("Post parameters : " + postParams);
+
+		HttpsURLConnection.setFollowRedirects(true);
 
 		URL obj = new URL(url);
-		HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
+		HttpsURLConnection conn = (HttpsURLConnection) obj.openConnection();
+
+		HostnameVerifier allHostsValid = new HostnameVerifier() {
+
+			public boolean verify(String hostname, SSLSession session) {
+
+				//System.out.println("verify");
+				return true;
+			}
+		};
+		conn.setHostnameVerifier(allHostsValid);
+		conn.setSSLSocketFactory(ctx.getSocketFactory());
+		conn.setInstanceFollowRedirects(false);
+		conn.setFollowRedirects(true);
 
 		// Acts like a browser
 		conn.setUseCaches(false);
 		conn.setRequestMethod("POST");
-		conn.setRequestProperty("Host", "www.kikourou.net");
 		conn.setRequestProperty("User-Agent", USER_AGENT);
-		conn.setRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
-		conn.setRequestProperty("Accept-Language", "fr,fr-FR;q=0.8,en-US;q=0.5,en;q=0.3");
-		conn.setRequestProperty("Upgrade-Insecure-Requests", "1");
-		conn.setRequestProperty("Connection", "keep-alive");
 		conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 		conn.setRequestProperty("Content-Length", Integer.toString(postParams.length()));
 		if ( isCookie()) {
@@ -197,6 +253,8 @@ public class KikourouService {
 		wr.close();
 
 		int responseCode = conn.getResponseCode();
+
+		//System.out.println("Post Response code " + responseCode );
 		
 		setCookies(conn.getHeaderFields().get("Set-Cookie"));
 		/*System.out.println("\nSending 'POST' request to URL : " + url);
@@ -210,17 +268,40 @@ public class KikourouService {
 		while ((inputLine = in.readLine()) != null) {
 			response.append(inputLine);
 		}
+
+
 		in.close();
+
+		// get http status code
+
+
 		//System.out.println(response.toString());
+
+		return response.toString();
 
 	}
 	
 	private String sendGet(String url) throws Exception {
 
+		System.out.println("Send GET request to " + url);
+
+		SSLContext ctx = SSLContext.getInstance("TLS");
+		ctx.init(new KeyManager[0], new TrustManager[]{new TrustAnyTrustManager()}, new java.security.SecureRandom());
+		SSLContext.setDefault(ctx);
+		HttpsURLConnection.setDefaultSSLSocketFactory(ctx.getSocketFactory());
+		HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
+			@Override
+			public boolean verify(String arg0, SSLSession arg1) {
+				return true;
+			}
+		});
+
 		URL obj = new URL(url);
+
 		HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
 
 		// Acts like a browser
+		conn.setFollowRedirects(true);
 		conn.setUseCaches(false);
 		conn.setRequestMethod("GET");
 		conn.setRequestProperty("Host", "www.kikourou.net");
@@ -236,6 +317,9 @@ public class KikourouService {
 		}
 
 		int responseCode = conn.getResponseCode();
+
+		setCookies(conn.getHeaderFields().get("Set-Cookie"));
+
 		//System.out.println("\nSending 'GET' request to URL : " + url);
 		//System.out.println("Response Code : " + responseCode);
 
@@ -247,6 +331,8 @@ public class KikourouService {
 			response.append(inputLine);
 		}
 		in.close();
+
+
 		//System.out.println(response.toString());
 		
 		return response.toString();
@@ -259,6 +345,8 @@ public class KikourouService {
 		for ( HttpCookie httpCookie : mapCookies.values() ) {
 			cookieString += httpCookie.toString() + ";"; 
 		}
+
+		//System.out.println("==>Cookie string " + cookieString);
 		
 		return cookieString;
 	}
@@ -270,18 +358,35 @@ public class KikourouService {
 
 
 	public String getSid() throws Exception {
-		String url = "http://www.kikourou.net/forum/ucp.php?mode=login";
-		Response response = 
+
+		String getRet = sendGet("https://www.kikourou.net/forum/ucp.php?mode=login");
+		//System.out.println("Get ret " + getRet);
+
+		String url = "https://www.kikourou.net/forum/ucp.php?mode=login";
+		Connection.Response response =
                  Jsoup.connect(url)
+				 //.proxy(Config.getConfig().getProxyHost(), Integer.parseInt(Config.getConfig().getProxyPort()))
+				 .sslSocketFactory(socketFactory())
                  .userAgent("Mozilla/5.0")
-                 .method(Method.GET)
+                 .method(Connection.Method.GET)
                  .followRedirects(true)
                  .execute();
-		
+
+		// dump response
+		//System.out.println(response.body());
+
 		Document document = response.parse();
 		Elements elements = document.select("input[type=hidden]");
-		Element elt = elements.first();
-		return elt.attr("value");
+		for ( Element elt : elements ) {
+			if ( "sid".equals(elt.attr("name"))) {
+				// return elt.attr("value");
+				//System.out.println("sid found " + elt.attr("value"));
+
+				return elt.attr("value");
+			}
+		}
+
+		return null;
 	}
 	
 
@@ -290,119 +395,80 @@ public class KikourouService {
 		
 		// sport 24 : trail
 		// 
-		String url = "http://www.kikourou.net/entrainement/ajout.php";
-		
-		String postParams = 
-				encode("annee", "" + annee ) +
-				encode("mois", "" + mois ) +
-				encode("jour", "" + jour ) +
-				encode("heure", "" + heure ) +
-				encode("min", "" + minute ) +
-				encode("sec", "" + seconde ) +
-				encode("denivele", "" + deniv ) +
-				encode("distance", "" + distance ) +
-				encode("sport", "" + sport ) +
-				encode("type", "1" ) +
-				encode("difficulte", "4" ) +
-				encode("nom", "" + name ) + 
-				encode("submit", "Enregistrer") +
-				encode("details", "1") + 
-				encode("difficulte", "4") +
-				encode("dureesommeil", "0") +
-				encode("etape", "3") +
-				encode("etatarrivee", "1") +
-				encode("etirements", "0") +
-				encode("FCmaxj", "180") +
-				encode("FCR", "45") +
-				encode("forme", "1") +
-				encode("meteo", "1") +
-				encode("pct1", "100") +
-				encode("phase", "0") +
-				encode("sommeil", "1") +
-				encode("typeterrain1", "1") +
-				encode("typeterrain2", "1") +
-				encode("typeterrain3", "1") +
-				encode("zone1", "122") +
-				encode("zone2", "150") +
-				encode("zone3", "157") +
-				encode("zone4", "166") +
-				encode("zone5", "173") +
-				encode("zone5sup", "178") +
-				encode("descriptionpublique", descriptionPublique) +
-				encode("description", descriptionPrivee);
-				
-		
+		String url = "https://www.kikourou.net/entrainement/ajout.php";
+
+		String postParams =
+			encode("jour", "" + jour ) +
+			encode("mois", "" + mois ) +
+			encode("annee", "" + annee ) +
+			encode("type", "1" ) +
+			encode("nom", "" + name ) +
+			encode("difficulte", "4" ) +
+			encode("lieu", "" ) +
+			encode("intensite", "0" ) +
+			encode("sport", "" + sport ) +
+			encode("phase", "0" ) +
+			encode("distance", "" + distance ) +
+			encode("denivele", "" + deniv ) +
+		  	encode("fcmoy", "" ) +
+			encode("fcmax", "" ) +
+			encode("heuredepart", "" ) +
+			encode("mindepart", "" ) +
+			encode("heure", "" + heure ) +
+			encode("min", "" + minute ) +
+			encode("sec", "" + seconde ) +
+			encode("descriptionpublique", descriptionPublique) +
+			encode("description", descriptionPrivee) +
+			encode("submit", "Enregistrer") +
+			encode("details", "1") +
+			encode("vmax", "" ) +
+			encode("vmoy", "" ) +
+			encode("cadmoy", "" ) +
+			encode("deniveleneg", "" ) +
+			encode("altimin", "" ) +
+			encode("altimoy", "" ) +
+			encode("altimax", "" ) +
+			encode("nbequipiers", "" ) +
+			encode("kcal", "" ) +
+			encode("typeterrain1", "1") +
+			encode("pct1", "100") +
+			encode("typeterrain2", "1") +
+			encode("pct2", "100") +
+			encode("typeterrain3", "1") +
+			encode("pct3", "100") +
+			encode("meteo", "1") +
+			encode("tmin", "" ) +
+			encode("tmax", "" ) +
+			encode("forme", "1") +
+			encode("etatarrivee", "1") +
+			encode("poidsavant", "" ) +
+			encode("poidsapres", "" ) +
+			encode("txtblessure", "" ) +
+			encode("zone1", "122") +
+			encode("zone2", "150") +
+			encode("zone3", "157") +
+			encode("zone4", "166") +
+			encode("zone5", "173") +
+			encode("zone5sup", "178") +
+			encode("dureezone0", "" ) +
+			encode("dureezone1", "" ) +
+			encode("dureezone2", "" ) +
+			encode("dureezone3", "" ) +
+			encode("dureezone4", "" ) +
+			encode("dureezone5", "" ) +
+			encode("dureezone5sup", "" ) +
+			encode("etirements", "0") +
+			encode("sommeil", "1") +
+			encode("dureesommeil", "0") +
+			encode("FCmaxj", "180") +
+			encode("FCR", "45") +
+			encode("idevenement", "" ) +
+			encode("idmodif", "0") +
+			encode("idparcours", "" ) +
+			encode("etape", "3") ;
+
 		sendPost(url, postParams);
-		//annee=2018&mois=1&jour=24&heure=1&min=3&sec=12&denivele=120&distance=1.4&sport=24&type=1&difficulte=4&nom=test+creation+auto&submit=Enregistrer&
-		/*
-		 altimax	
-		altimin	
-		altimoy	
-		annee	2018
-		cadmoy	
-		denivele	150
-		deniveleneg	
-		description	
-		descriptionpublique	
-		details	1
-		difficulte	4
-		distance	1.5
-		dureesommeil	0
-		dureezone0	
-		dureezone1	
-		dureezone2	
-		dureezone3	
-		dureezone4	
-		dureezone5	
-		dureezone5sup	
-		etape	3
-		etatarrivee	1
-		etirements	0
-		fcmax	
-		FCmaxj	180
-		fcmoy	
-		FCR	45
-		forme	1
-		heure	1
-		heuredepart	
-		idevenement	
-		idparcours	
-		intensite	0
-		jour	24
-		kcal	
-		lieu	
-		meteo	1
-		min	12
-		mindepart	
-		mois	1
-		nbequipiers	
-		nom	test+creation+seance+auto
-		pct1	100
-		pct2	
-		pct3	
-		phase	0
-		poidsapres	
-		poidsavant	
-		sec	12
-		sommeil	1
-		sport	24
-		submit	Enregistrer
-		tmax	
-		tmin	
-		txtblessure	
-		type	1
-		typeterrain1	1
-		typeterrain2	1
-		typeterrain3	1
-		vmax	
-		vmoy	
-		zone1	122
-		zone2	150
-		zone3	157
-		zone4	166
-		zone5	173
-		zone5sup	178
-		 */
+
 		
 	}
 	
@@ -410,9 +476,11 @@ public class KikourouService {
 		 
 		 if (cookies != null ) {
 			 for ( String cookie: cookies ) {
+				 //System.out.println("Parsing cookies " + cookie);
 				 List<HttpCookie> pcookies = HttpCookie.parse(cookie);
 				 for ( HttpCookie httpCookie : pcookies) {
 					 //System.out.println("Put Cookie " + httpCookie.toString());
+					// httpCookie.setDomain(".kikourou.net");
 					 mapCookies.put(httpCookie.getName(), httpCookie);
 				 }
 			 }
@@ -421,7 +489,8 @@ public class KikourouService {
 	 }
 	 
 	 private String encode(String key, String value) throws UnsupportedEncodingException {
-		 return key + "=" + URLEncoder.encode(value, "ISO-8859-1") + "&";
+		//return key + "=" + URLEncoder.encode(value, "ISO-8859-1") + "&";
+		 return key + "=" + URLEncoder.encode(value, "UTF-8") + "&";
 	 }
 	 
 	 public static void main(String[] args) throws Exception {
@@ -441,27 +510,33 @@ public class KikourouService {
 		//kikService.getKiroureurId();
 		 
 	 }
-	 
-	 private LocalDate parseDate(String date) {
-		 
-		 date = date.replace("jan", "01");
-		 date = date.replace("fév", "02");
-		 date = date.replace("mar", "03");
-		 date = date.replace("avr", "04");
-		 date = date.replace("mai", "05");
-		 date = date.replace("jun", "06");
-		 date = date.replace("jui", "07");
-		 date = date.replace("aoû", "08");
-		 date = date.replace("sep", "09");
-		 date = date.replace("oct", "10");
-		 date = date.replace("nov", "11");
-		 date = date.replace("déc", "12");
-		 DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd MM yy").withLocale(Locale.FRANCE);
-		 LocalDate dt = LocalDate.parse(date, dtf);
 
-		 return dt;
-	 }
-	 
+	private LocalDate parseDate(String date) {
+		List<String> formatStrings = Arrays.asList("dd MM yy", "dd MMM yy");
+		List<Locale> locales = Arrays.asList(Locale.FRANCE, Locale.ENGLISH);
+
+		for ( String formatString : formatStrings ) {
+			for ( Locale locale : locales ) {
+				try {
+					DateTimeFormatter dtf = DateTimeFormatter.ofPattern(formatString, locale);
+					LocalDate dt = LocalDate.parse(date, dtf);
+					//System.out.println("Date parsed" + dt);
+					return dt;
+				}
+				catch( Throwable t ) {
+					//System.out.println("Error " + t.getMessage());
+					//System.out.println("Go next");
+				}
+			}
+		}
+
+		//System.out.println("Date not parsed " + date);
+		return null;
+
+
+
+	}
+
 	 // 01h03'29''
 	 public int parseElapse(String elapse) {
 		 
@@ -486,3 +561,4 @@ public class KikourouService {
 	 }
 
 }
+

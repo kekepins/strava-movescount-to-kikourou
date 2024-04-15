@@ -63,7 +63,7 @@ public class StravaKeyLicenceServer {
 					stravaService.writeCurrentToken(tokenInfo);
 				}
 				else {
-					responseStr = "Problème avec l'autorisation Strava";
+					responseStr = "ProblÃ¨me avec l'autorisation Strava";
 				}
 				
 				byte response[] = responseStr.getBytes("UTF-8");

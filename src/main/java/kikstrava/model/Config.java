@@ -83,26 +83,6 @@ public class Config {
 		this.kikPassword = kikPassword;
 	}
 
-	public String getMovescountEmail() {
-		return movescountEmail;
-	}
-
-	public void setMovescountEmail(String movescountEmail) {
-		this.movescountEmail = movescountEmail;
-	}
-
-	public String getMovescountUserKey() {
-		return movescountUserKey;
-	}
-
-	public void setMovescountUserKey(String movescountUserKey) {
-		this.movescountUserKey = movescountUserKey;
-	}
-	
-	public boolean isMovescountOK() {
-		return (movescountEmail != null && !"".equals(movescountEmail) && movescountUserKey != null && !"".equals(movescountUserKey));
-	}
-	
 	public boolean isStravaOK() {
 		return (stravaClientId != null && !"".equals(stravaClientId)) && 
 			 (stravaSecret != null && !"".equals(stravaSecret))	;

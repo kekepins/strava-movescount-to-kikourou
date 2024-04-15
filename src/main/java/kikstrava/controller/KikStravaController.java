@@ -19,12 +19,10 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
-import javafx.scene.control.RadioButton;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableView;
-import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
@@ -64,13 +62,8 @@ public class KikStravaController implements Initializable, LicenceEventListener 
     
     @FXML
     private Spinner<Integer> maxReturnSpinner;
-    
-    @FXML
-    private RadioButton stravaRadioButton;
 
-    @FXML
-    private RadioButton movescountRadioButton;
-    
+
  	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		
@@ -78,29 +71,11 @@ public class KikStravaController implements Initializable, LicenceEventListener 
 		//stravaService = new StravaService(Config.getConfig().getStravaToken());
 		stravaService = new StravaV3Service(Config.getConfig().getStravaClientId(), Config.getConfig().getStravaSecret());
 		kikourouService = new KikourouService(Config.getConfig().getKikUser(), Config.getConfig().getKikPassword());
-		movescountService = new MovescountService(Config.getConfig().getMovescountEmail(), Config.getConfig().getMovescountUserKey());
-		
+
 		// Strava access server ...
 		stravaLicenceKeyServerListener = new StravaKeyLicenceServer(stravaService, this);
-		
-		// radio buttons
-		ToggleGroup toggleGroup = new ToggleGroup();
 
-		stravaRadioButton.setToggleGroup(toggleGroup);
-		movescountRadioButton.setToggleGroup(toggleGroup);
-		stravaRadioButton.setSelected(true);
 
-		
-		if ( !Config.getConfig().isMovescountOK() ) {
-			movescountRadioButton.setDisable(true);
-		}
-		
-		if ( !Config.getConfig().isStravaOK() ) {
-			stravaRadioButton.setDisable(true);
-			movescountRadioButton.setSelected(true);
-		}
-
-		
 		TableColumn<KikourouActivity, Boolean> exportCol = new TableColumn<>("");
 		exportCol.setCellFactory(column -> new CheckBoxTableCell<>());
 		exportCol.setCellValueFactory(cellData -> {
@@ -213,11 +188,11 @@ public class KikStravaController implements Initializable, LicenceEventListener 
 	    	alert.setHeaderText("Import dans kikourou");
 	    	
 	    	if ( countOk == 1 ) {
-	    		alert.setContentText(countOk + " entrainement a été correctement importé");
+	    		alert.setContentText(countOk + " entrainement a Ã©tÃ© correctement importÃ©");
 	    		
 	    	}
 	    	else {
-	    		alert.setContentText(countOk + " entrainements ont été correctement importés");
+	    		alert.setContentText(countOk + " entrainements ont Ã©tÃ© correctement importÃ©s");
 	    	}
 	    	alert.showAndWait();
     	}
@@ -236,19 +211,19 @@ public class KikStravaController implements Initializable, LicenceEventListener 
     		// Get kikourou data from the same period
     		Map<LocalDate, KikourouActivity> kikActivities = kikourouService.searchActivities(startDate, endDate);
     		
-    		if ( stravaRadioButton.isSelected() ) {
+    		//if ( stravaRadioButton.isSelected() ) {
     			
-    			if  ( !stravaService.isLicenceCodeInit() ) {
-    				// Get new strava authorisation
-    				verifyStravaLicence();
-    			}
-    			else {
-    				readStravaActivities(kikActivities, startDate, endDate);
-    			}
-    		}
+			if  ( !stravaService.isLicenceCodeInit() ) {
+				// Get new strava authorisation
+				verifyStravaLicence();
+			}
+			else {
+				readStravaActivities(kikActivities, startDate, endDate);
+			}
+		/*}
     		else {
     			readMovescountActivities(kikActivities, startDate, endDate);
-    		}
+    		}*/
 		} 
     	catch (Exception e) {
 			e.printStackTrace();

@@ -2,6 +2,7 @@ package kikstrava.service;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Properties;
 
 import kikstrava.model.Config;
@@ -23,7 +24,7 @@ public class ConfigManager {
 	private final static String PROXY_PORT = "proxy.port";
 
 	public static void init() throws Exception {
-		Properties prop = new Properties();
+		Properties properties = new Properties();
 		InputStream input = null;
 
 		try {
@@ -35,65 +36,61 @@ public class ConfigManager {
 				throw new Exception("Impossible de trouver le fichier stravakik.conf");
 			}
 			// load a properties file
-			prop.load(input);
+			//prop.load(input);
+			InputStreamReader inputStreamReader = new InputStreamReader(input, "UTF-8");
+			properties.load(inputStreamReader);
 
 			// Read properties :
 			//--------------
 			// Kikourou
 			//-------------
-			String kikUser = prop.getProperty(KIK_USER_KEY);
+			String kikUser = properties.getProperty(KIK_USER_KEY);
 			if ( kikUser != null ) {
+				System.out.println("kikUser = " + kikUser);
 				config.setKikUser(kikUser.trim());
 			}
 			
-			String kikPsw = prop.getProperty(KIK_PSW_KEY);
+			String kikPsw = properties.getProperty(KIK_PSW_KEY);
 			if ( kikPsw != null ) {
+				System.out.println("kikPsw = " + kikPsw);
 				config.setKikPassword(kikPsw.trim());
 			}
 			
 			//--------------
 			// Strava
 			//-------------
-			String stravaSecret = prop.getProperty(STRAVA_SECRET);
+			String stravaSecret = properties.getProperty(STRAVA_SECRET);
 			if ( stravaSecret != null ) {
+				System.out.println("Strava secret = " + stravaSecret);
 				config.setStravaSecret(stravaSecret.trim());
 			}
 				
-			String stravaClientId = prop.getProperty(STRAVA_CLIENTID);
+			String stravaClientId = properties.getProperty(STRAVA_CLIENTID);
 			if ( stravaClientId != null ) {
+				System.out.println("Strava client id = " + stravaClientId);
 				config.setStravaClientId(stravaClientId.trim());
 			}
 			
-			//-----------
-			// Movescount
-			//-----------
-			String movescountEmail = prop.getProperty(MOVESCOUNT_EMAIL);
-			if ( movescountEmail != null ) {
-				config.setMovescountEmail(movescountEmail.trim());
-			}
-			
-			String movescountUserKey = prop.getProperty(MOVESCOUNT_USERKEY);
-			if ( movescountUserKey != null ) {
-				config.setMovescountUserKey(movescountUserKey.trim());
-			}
 
-			
 			if ( ( kikUser == null ) || "".equals(kikUser) || 
 					( kikPsw == null ) || "".equals(kikPsw) ) {
 				throw new Exception("Info kikourou (user ou psw) non trouvé dans la conf, fichier conf/stravakik.conf");
 			}
 			
-			if ( !config.isMovescountOK() && !config.isStravaOK() ) {
-				throw new Exception("Il faut configurer un accès à Strava ou un accès à movescount, fichier conf/stravakik.conf");
+			if ( !config.isStravaOK() ) {
+				throw new Exception("Il faut configurer un accès à Strava ou un accés à movescount, fichier conf/stravakik.conf");
 			}
 			
-			String useProxy = prop.getProperty(USE_PROXY, "false");
+			String useProxy = properties.getProperty(USE_PROXY, "false");
+			System.out.println("useProxy = " + useProxy);
 			boolean isUseProxy = "true".equals(useProxy);   // Boolean.getBoolean(useProxy);
 			config.setProxy(isUseProxy);
 			if (isUseProxy) {
-				String proxyUrl = prop.getProperty(PROXY_URL);
+				String proxyUrl = properties.getProperty(PROXY_URL);
+				System.out.println("Proxy url = " + proxyUrl);
 				config.setProxyHost(proxyUrl);
-				String proxyPort = prop.getProperty(PROXY_PORT);
+				String proxyPort = properties.getProperty(PROXY_PORT);
+				System.out.println("Proxy port = " + proxyPort);
 				config.setProxyPort(proxyPort);
 			}
 		} finally {
