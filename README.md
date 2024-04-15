@@ -1,3 +1,9 @@
+#---------------------------------------------------------
+# 15 avril 2024 unt nouvelle version est disponible !!!!
+#----------------------------------------------------------
+
+https://github.com/kekepins/strava/raw/master/dist/kikstrava-1.8.0.zip
+
 # Outil d'import des entrainements de Strava ou Movescount dans kikourou (http://www.kikourou.net)
 
 Transfert des entrainements de Strava ou Movescount vers Kikourou.
