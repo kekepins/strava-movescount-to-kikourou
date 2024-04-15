@@ -38,6 +38,9 @@ Et voilà on a fait le plus dur on peut récupérer les 2 précieuses informatio
 # Versions
 
 ## Version 1.8 (la dernière, 15 avril 2024)
+
+
+
 Nouveau serveur kikourou, nouveaux problèmes
 Ajout de certains sports qui fonctionnait pas
 Suppression du support movescount
@@ -90,7 +93,7 @@ Première version uniquement l'import depuis strava.
 # Installation
 
 ## Dézipper dans un répertoire
-On télécharge la dernière version de l'application ici : https://github.com/kekepins/strava/raw/master/dist/kikstrava_1.7.0.zip
+On télécharge la dernière version de l'application ici : https://github.com/kekepins/strava/raw/master/dist/kikstrava-1.8.0.zip
 
 On dézippe dans un répertoire.
 
