@@ -1,6 +1,4 @@
-#---------------------------------------------------------
-# 15 avril 2024 unt nouvelle version est disponible !!!!
-#----------------------------------------------------------
+# 15 avril 2024 une nouvelle version est disponible !!!!
 
 https://github.com/kekepins/strava/raw/master/dist/kikstrava-1.8.0.zip
 
