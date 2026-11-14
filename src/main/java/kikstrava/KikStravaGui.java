@@ -4,8 +4,8 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import kikstrava.controller.KikStravaController;
 import kikstrava.model.Config;
 import kikstrava.service.ConfigManager;
@@ -29,8 +29,6 @@ public class KikStravaGui extends Application {
 			    System.setProperty("https.proxyPort", Config.getConfig().getProxyPort());
 			}
 			
-			primaryStage.initStyle(StageStyle.UTILITY);
-			
 			FXMLLoader loader = new FXMLLoader();
 			
 			loader.setLocation(KikStravaGui.class.getResource("view/kikstrava.fxml"));
@@ -44,6 +42,8 @@ public class KikStravaGui extends Application {
 	        //scene.getStylesheets().add(NeuranetGui.class.getResource("application.css").toExternalForm());
 	    
 	        primaryStage.setTitle("Strava to kikourou");
+	        primaryStage.getIcons().add(new Image(
+					KikStravaGui.class.getResource("view/kikourou-icon.png").toExternalForm()));
 	        primaryStage.setScene(scene);
 	        primaryStage.setResizable(false);
 	        primaryStage.show();

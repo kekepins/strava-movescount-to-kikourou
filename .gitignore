@@ -56,3 +56,4 @@ target/classes/kikstrava/KikourouStravaImport.class
 # -----------------------
 /release
 /sav
+/conf_local

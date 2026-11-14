@@ -26,6 +26,24 @@
                   </valueFactory>
             </Spinner>
             <Label layoutX="368.0" layoutY="168.0" text="Max" />
+            <RadioButton fx:id="stravaRadioButton" layoutX="20.0" layoutY="40.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="130.0" text="Strava">
+               <graphic>
+                  <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@strava_small.jpg" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </RadioButton>
+            <RadioButton fx:id="garminRadioButton" layoutX="20.0" layoutY="72.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="130.0" text="Garmin">
+               <graphic>
+                  <ImageView fitHeight="25.0" fitWidth="38.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@garmin_small.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </RadioButton>
          </children>
     </AnchorPane>
   </children>

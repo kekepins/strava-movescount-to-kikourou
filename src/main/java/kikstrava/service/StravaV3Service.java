@@ -46,6 +46,11 @@ public class StravaV3Service {
 	private StravaTokenInfo tokenInfo;
 
 	public StravaV3Service(String clientId, String clientSecret) {
+		
+		//System.setProperty("https.protocols", "TLSv1.2,TLSv1.3");
+		//System.out.println("Set TLSv1.2");
+		//System.setProperty("https.protocols", "TLSv1.2");
+		
 		this.clientId = clientId;
 		this.clientSecret = clientSecret;
 		objectMapper = new ObjectMapper();

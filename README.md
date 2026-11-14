@@ -1,13 +1,13 @@
-# 15 avril 2024 une nouvelle version est disponible !!!!
+# Nouvelle version : import depuis Garmin Connect !!!!
 
-https://github.com/kekepins/strava/raw/master/dist/kikstrava-1.8.0.zip
+# Outil d'import des entrainements de Strava ou Garmin vers kikourou (https://www.kikourou.net)
 
-# Outil d'import des entrainements de Strava vers kikourou (https://www.kikourou.net)
+Transfert des entrainements de **Strava** ou **Garmin Connect** vers Kikourou.
 
-Transfert des entrainements de Strava ou Movescount vers Kikourou.
-
-Les données sont lues dans Strava grâce à l'api REST et envoyé dans kikourou comme le ferait un navigateur.
-Pour strava on utilise des api pas documentées mais qui permettent aussi d'accéder aux entrainements, movescount renvoie aussi des données en REST.
+Les données Strava sont lues grâce à l'api REST, et envoyées dans kikourou comme le ferait un navigateur.
+Pour Strava on utilise des api pas documentées mais qui permettent aussi d'accéder aux entrainements.
+Pour Garmin, on utilise l'**API personnelle Garmin Connect** (clé API personnelle) : la clé est échangée
+contre un jeton d'accès, puis on récupère la liste des activités en REST (JSON).
 
 # Comment avoir configurer strava ?
 
@@ -39,9 +39,51 @@ Et voilà on a fait le plus dur on peut récupérer les 2 précieuses informatio
 ![alt tag](https://raw.githubusercontent.com/kekepins/strava/img/img/strava6.png)
 
 
+# Comment configurer Garmin ?
+
+L'import depuis Garmin utilise une **clé API personnelle** Garmin Connect. Une seule information
+est nécessaire : cette clé, à renseigner dans `garmin.apikey` du fichier de configuration.
+
+## Étape 1 — Générer la clé API personnelle
+
+Connecte-toi à ton compte Garmin, puis va dans la section **« Clé API personnelle »**
+(« Personal API Key ») de ton compte développeur Garmin Connect.
+
+Documentation Garmin : https://developer.garmin.com/gc-developer-program/personal/
+
+Génère une clé : elle ressemble à `GCDC_xxxxxxxx-....` (une longue chaîne).
+
+## Étape 2 — Renseigner la clé dans la configuration
+
+Dans `conf/stravakik.conf`, renseigner :
+
+```
+garmin.apikey=GCDC_xxxxxxxx-....
+```
+
+C'est tout. Au lancement, sélectionne **Garmin** dans l'application, choisis la période,
+clique sur « Voir les entrainements » puis « Importer dans Kikourou ».
+
+> Remarque sur le fonctionnement : l'application échange automatiquement la clé API contre un
+> jeton d'accès OAuth2 (endpoint `personal-api-key/token`), puis interroge l'API
+> `activitylist-service` pour lister tes activités. Les types de sport Garmin (course, trail,
+> vélo, VTT, natation…) sont convertis vers les sports correspondants de kikourou.
+
+> ⚠️ La clé API personnelle est un **secret** : ne la partage pas et ne la commite pas dans un
+> dépôt public. En cas de fuite, régénère-la depuis ton compte Garmin.
+
+
 # Versions
 
-## Version 1.8 (la dernière, 15 avril 2024)
+## Version 1.9 (la dernière)
+
+Nouveautés :
+- **Ajout de l'import depuis Garmin Connect** via la clé API personnelle
+- Sélection de la source (Strava ou Garmin) dans l'interface
+- Scripts de lancement et de construction du livrable pour macOS (`run.sh`, `build-app.sh`)
+  et Windows (`run.bat`, `build-app.bat`)
+
+## Version 1.8 (15 avril 2024)
 
 Problèmes corrigés :
 - Nouveau serveur kikourou, nouveaux problèmes
@@ -96,7 +138,7 @@ Première version uniquement l'import depuis strava.
 # Installation
 
 ## Dézipper dans un répertoire
-On télécharge la dernière version de l'application ici : https://github.com/kekepins/strava/raw/master/dist/kikstrava-1.8.0.zip
+On télécharge la dernière version de l'application ici : https://github.com/kekepins/strava/raw/master/dist/kikstrava-1.9.0.zip
 
 On dézippe dans un répertoire.
 
@@ -114,6 +156,10 @@ Il faut éditer le fichier
 
 * strava.clientid : le code client récupéré sur le site (voir le début)
 * strava.secret : le secret récupéré sur le site (voir le début)
+
+* garmin.apikey : la clé API personnelle Garmin (voir « Comment configurer Garmin ? »)
+
+Il faut configurer **au moins une source** : Strava (clientid + secret) **ou** Garmin (apikey).
 
  si besoin on peut configurer un proxy :
 * proxy= true/false : le proxy est activé, si sait pas ce que c'est on met rien (valeur false)
@@ -137,16 +183,38 @@ Et on clique sur l'autre bouton et ça envoie dans kikourou :
 
 # Pour les développeurs
 
-## build
+## Compilation
 
 ```
-$  mvn javafx:jlink package
+mvn clean package
 ```
 
-Si certains veulent compiler sur autre chose que windows, il doit falloir changer dans le fichier pom.xml
+Cela produit `target/kikstrava-<version>-jar-with-dependencies.jar`.
+
+Le classifier natif JavaFX se choisit avec la propriété `platform` (par défaut `mac` dans le pom) :
 
 ```
-		<platform>win</platform>
-```	
+mvn -Dplatform=win clean package      # Windows
+mvn -Dplatform=mac clean package      # macOS Intel / JVM x86_64
+mvn -Dplatform=mac-aarch64 ...        # macOS Apple Silicon (JVM arm64)
+mvn -Dplatform=linux ...              # Linux
+```
 
-On peut tenter de mettre mac ou linux, aucune idée si ça marche.
+## Lancer l'application (avec la config locale)
+
+- macOS / Linux : `./run.sh`
+- Windows : `run.bat`
+
+Ces scripts compilent, puis lancent l'application en chargeant `conf_local/stravakik.conf`
+et en fournissant JavaFX via `--module-path` (classifier natif détecté automatiquement).
+
+## Construire un livrable autonome (runtime embarqué, sans Java installé)
+
+- macOS : `./build-app.sh` → `target/dist/KikStrava.app` et `KikStrava-*.dmg`
+- Windows : `build-app.bat` → `target/dist/KikStrava\KikStrava.exe` (+ `.msi` si WiX Toolset installé)
+
+Ces scripts utilisent `jpackage` (fourni par le JDK ≥ 17). La configuration à remplir par
+l'utilisateur se trouve dans le livrable sous `app/conf/stravakik.conf`.
+
+> Astuce repo d'entreprise : si Maven est configuré avec un `settings.xml` spécifique, renseigne-le
+> via la variable `MVN_SETTINGS` en haut des scripts `.bat`, ou l'option `-s` pour les scripts `.sh`.

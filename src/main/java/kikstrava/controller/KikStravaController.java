@@ -19,6 +19,8 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellEditEvent;
@@ -30,10 +32,12 @@ import javafx.scene.input.MouseEvent;
 import javafx.util.converter.FloatStringConverter;
 import kikstrava.model.Config;
 import kikstrava.model.KikourouActivity;
+import kikstrava.model.GarminActivity;
 import kikstrava.model.MovescountActivity;
 import kikstrava.model.StravaActivity;
 import kikstrava.service.KikourouService;
 import kikstrava.service.LicenceEventListener;
+import kikstrava.service.GarminService;
 import kikstrava.service.MovescountService;
 import kikstrava.service.ServiceException;
 import kikstrava.service.StravaKeyLicenceServer;
@@ -54,6 +58,7 @@ public class KikStravaController implements Initializable, LicenceEventListener 
     
     private StravaV3Service stravaService;
     private MovescountService movescountService;
+    private GarminService garminService;
     private KikourouService kikourouService;
     private HostServices hostServices;
     private StravaKeyLicenceServer stravaLicenceKeyServerListener;
@@ -62,6 +67,12 @@ public class KikStravaController implements Initializable, LicenceEventListener 
     
     @FXML
     private Spinner<Integer> maxReturnSpinner;
+
+    @FXML
+    private RadioButton stravaRadioButton;
+
+    @FXML
+    private RadioButton garminRadioButton;
 
 
  	@Override
@@ -74,6 +85,20 @@ public class KikStravaController implements Initializable, LicenceEventListener 
 
 		// Strava access server ...
 		stravaLicenceKeyServerListener = new StravaKeyLicenceServer(stravaService, this);
+		garminService = new GarminService(Config.getConfig().getGarminApiKey());
+
+		// radio buttons source
+		ToggleGroup toggleGroup = new ToggleGroup();
+		stravaRadioButton.setToggleGroup(toggleGroup);
+		garminRadioButton.setToggleGroup(toggleGroup);
+		stravaRadioButton.setSelected(true);
+		if ( !Config.getConfig().isGarminOK() ) {
+			garminRadioButton.setDisable(true);
+		}
+		if ( !Config.getConfig().isStravaOK() ) {
+			stravaRadioButton.setDisable(true);
+			garminRadioButton.setSelected(true);
+		}
 
 
 		TableColumn<KikourouActivity, Boolean> exportCol = new TableColumn<>("");
@@ -211,8 +236,7 @@ public class KikStravaController implements Initializable, LicenceEventListener 
     		// Get kikourou data from the same period
     		Map<LocalDate, KikourouActivity> kikActivities = kikourouService.searchActivities(startDate, endDate);
     		
-    		//if ( stravaRadioButton.isSelected() ) {
-    			
+    		if ( stravaRadioButton.isSelected() ) {
 			if  ( !stravaService.isLicenceCodeInit() ) {
 				// Get new strava authorisation
 				verifyStravaLicence();
@@ -220,10 +244,10 @@ public class KikStravaController implements Initializable, LicenceEventListener 
 			else {
 				readStravaActivities(kikActivities, startDate, endDate);
 			}
-		/*}
+    		}
     		else {
-    			readMovescountActivities(kikActivities, startDate, endDate);
-    		}*/
+    			readGarminActivities(kikActivities, startDate, endDate);
+    		}
 		} 
     	catch (Exception e) {
 			e.printStackTrace();
@@ -286,6 +310,27 @@ public class KikStravaController implements Initializable, LicenceEventListener 
 
 			}
 			
+			importBtn.setDisable(false);
+		}
+		else {
+			importBtn.setDisable(true);
+		}
+	}
+
+	private void readGarminActivities(Map<LocalDate, KikourouActivity> kikActivities, LocalDate startDate, LocalDate endDate)
+		throws JsonParseException, JsonMappingException, IOException, ServiceException {
+		GarminActivity[] garminActivities = garminService.searchActivities(startDate, endDate, maxReturnSpinner.getValueFactory().getValue());
+
+		if ( garminActivities != null && garminActivities.length > 0) {
+			for ( GarminActivity garminActivity : garminActivities ) {
+				activities.add(garminActivity);
+
+				LocalDate localDate = garminActivity.getStartDateLocal().toLocalDate();
+
+				if ( kikActivities.containsKey(localDate) ) {
+					garminActivity.setIsTransfer(false);
+				}
+			}
 			importBtn.setDisable(false);
 		}
 		else {

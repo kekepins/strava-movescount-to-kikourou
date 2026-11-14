@@ -11,6 +11,7 @@ public class Config {
 	private String stravaClientId;
 	private String stravaSecret;
 	
+	private String garminApiKey;
 	private String movescountEmail;
 	private String movescountUserKey;
 	
@@ -81,6 +82,18 @@ public class Config {
 
 	public void setKikPassword(String kikPassword) {
 		this.kikPassword = kikPassword;
+	}
+
+	public String getGarminApiKey() {
+		return garminApiKey;
+	}
+
+	public void setGarminApiKey(String garminApiKey) {
+		this.garminApiKey = garminApiKey;
+	}
+
+	public boolean isGarminOK() {
+		return garminApiKey != null && !"".equals(garminApiKey);
 	}
 
 	public boolean isStravaOK() {

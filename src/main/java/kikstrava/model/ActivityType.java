@@ -60,6 +60,80 @@ public enum ActivityType {
 		this.movescountCode = movescountCode;
 	}
 	
+	/**
+	 * Mappe un typeKey Garmin (ex: "running", "trail_running", "cycling")
+	 * vers un ActivityType. Retourne Run par defaut si inconnu.
+	 */
+	public static ActivityType fromGarminTypeKey(String typeKey) {
+		if ( typeKey == null ) {
+			return Run;
+		}
+		switch ( typeKey.toLowerCase() ) {
+			case "running":
+			case "street_running":
+			case "track_running":
+			case "treadmill_running":
+			case "indoor_running":
+				return Run;
+			case "trail_running":
+				return Trail;
+			case "hiking":
+			case "mountaineering":
+				return Hike;
+			case "walking":
+			case "casual_walking":
+			case "speed_walking":
+				return Walk;
+			case "cycling":
+			case "road_biking":
+			case "indoor_cycling":
+			case "virtual_ride":
+			case "commuting":
+				return Ride;
+			case "mountain_biking":
+			case "cyclocross":
+			case "gravel_cycling":
+				return VTT;
+			case "e_bike_fitness":
+			case "e_bike_mountain":
+				return EBikeRide;
+			case "lap_swimming":
+			case "swimming":
+				return Swim;
+			case "open_water_swimming":
+				return SwimExt;
+			case "resort_skiing_snowboarding":
+			case "resort_skiing":
+				return AlpineSki;
+			case "backcountry_skiing_snowboarding":
+			case "backcountry_skiing":
+				return BackcountrySki;
+			case "cross_country_skiing":
+			case "skate_skiing":
+				return NordicSki;
+			case "snowboarding":
+				return Snowboard;
+			case "snowshoeing":
+				return Snowshoe;
+			case "rowing":
+			case "indoor_rowing":
+				return Rowing;
+			case "stand_up_paddleboarding":
+				return StandUpPaddling;
+			case "kayaking":
+				return Kayaking;
+			case "strength_training":
+			case "indoor_cardio":
+				return WeightTraining;
+			case "yoga":
+				return Yoga;
+			case "elliptical":
+				return Elliptical;
+			default:
+				return Run;
+		}
+	}
+
 	public static ActivityType fromMovescountCode(int code) {
 		for ( ActivityType activityType : values()) {
 			if ( code == activityType.getMovescountCode()) {

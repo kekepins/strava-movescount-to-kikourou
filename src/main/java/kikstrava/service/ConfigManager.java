@@ -15,6 +15,7 @@ public class ConfigManager {
 	private final static String STRAVA_TOKEN = "strava.token";
 	private final static String STRAVA_CLIENTID = "strava.clientid";
 	private final static String STRAVA_SECRET = "strava.secret";
+	private final static String GARMIN_APIKEY = "garmin.apikey";
 	private final static String MOVESCOUNT_EMAIL = "movescount.email";
 	private final static String MOVESCOUNT_USERKEY = "movescount.userkey";
 	
@@ -72,13 +73,21 @@ public class ConfigManager {
 			}
 			
 
-			if ( ( kikUser == null ) || "".equals(kikUser) || 
+			//--------------
+			// Garmin
+			//-------------
+			String garminApiKey = properties.getProperty(GARMIN_APIKEY);
+			if ( garminApiKey != null ) {
+				config.setGarminApiKey(garminApiKey.trim());
+			}
+
+						if ( ( kikUser == null ) || "".equals(kikUser) || 
 					( kikPsw == null ) || "".equals(kikPsw) ) {
 				throw new Exception("Info kikourou (user ou psw) non trouvé dans la conf, fichier conf/stravakik.conf");
 			}
 			
-			if ( !config.isStravaOK() ) {
-				throw new Exception("Il faut configurer un accès à Strava ou un accés à movescount, fichier conf/stravakik.conf");
+			if ( !config.isStravaOK() && !config.isGarminOK() ) {
+				throw new Exception("Il faut configurer un accès à Strava ou à Garmin, fichier conf/stravakik.conf");
 			}
 			
 			String useProxy = properties.getProperty(USE_PROXY, "false");
