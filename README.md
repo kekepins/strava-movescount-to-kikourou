@@ -152,9 +152,14 @@ Depuis le dossier contenant `KikStrava.exe`, enregistre la tâche quotidienne à
 powershell -NoProfile -ExecutionPolicy Bypass -File .\install-daily-sync.ps1 -Source Garmin
 ```
 
+Pour planifier l'import à 20:00, indique l'heure avec `-At` :
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\install-daily-sync.ps1 -Source Garmin -At "20:00"
+```
+
 La source par défaut est Garmin. Pour utiliser Strava ou les deux sources, choisis
-`-Source Strava` ou `-Source Both`. Pour choisir une autre heure, ajoute par exemple
-`-At "20:00"`.
+`-Source Strava` ou `-Source Both`.
 Le lancement manuel accepte aussi `KikStrava.exe --sync --source=garmin`,
 `--source=strava` ou `--source=both`.
 La tâche s'exécute sous le compte Windows courant quand celui-ci est connecté; si l'ordinateur
