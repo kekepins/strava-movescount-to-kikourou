@@ -64,11 +64,7 @@ public class StravaTokenInfo {
 	}
 	
 	public String toString() {
-		
-		LocalDateTime expireDate =
-			    LocalDateTime.ofInstant(Instant.ofEpochSecond(expires_at), ZoneId.systemDefault());
-		
-		return "type:" + token_type + "/ac:" + access_token  + "/ea:" + expires_at + "/ed:" + expireDate + "/st:" + state +"/rt:" + refresh_token;
+		return "StravaTokenInfo{expires_at=" + expires_at + "}";
 	}
 	
 	public LocalDateTime getExpirationDate() {

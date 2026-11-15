@@ -3,7 +3,8 @@ package kikstrava.controller;
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -35,6 +36,7 @@ import kikstrava.model.KikourouActivity;
 import kikstrava.model.GarminActivity;
 import kikstrava.model.MovescountActivity;
 import kikstrava.model.StravaActivity;
+import kikstrava.service.ActivityFingerprint;
 import kikstrava.service.KikourouService;
 import kikstrava.service.LicenceEventListener;
 import kikstrava.service.GarminService;
@@ -192,6 +194,8 @@ public class KikStravaController implements Initializable, LicenceEventListener 
     @FXML
     void onImportClicked(MouseEvent event) {
     	int countOk = 0;
+		int countFailed = 0;
+		String firstFailure = null;
     	for (KikourouActivity activity : activities) {
     		if ( activity.getIsTransfer().get()) {
     			// Checked ..
@@ -200,27 +204,30 @@ public class KikStravaController implements Initializable, LicenceEventListener 
 					kikourouService.addActivity(activity);
 					countOk++;
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
+					countFailed++;
+					if (firstFailure == null) {
+						firstFailure = e.getMessage();
+					}
 				}
     			
     		}
     	}
     	
-    	if ( countOk > 0 ) {
-	    	Alert alert = new Alert(AlertType.INFORMATION);
-	    	alert.setTitle("Import");
-	    	alert.setHeaderText("Import dans kikourou");
-	    	
-	    	if ( countOk == 1 ) {
-	    		alert.setContentText(countOk + " entrainement a été correctement importé");
-	    		
-	    	}
-	    	else {
-	    		alert.setContentText(countOk + " entrainements ont été correctement importés");
-	    	}
-	    	alert.showAndWait();
-    	}
+		if (countOk > 0 || countFailed > 0) {
+			Alert alert = new Alert(countFailed > 0 ? AlertType.WARNING : AlertType.INFORMATION);
+			alert.setTitle("Import");
+			alert.setHeaderText("Import dans kikourou");
+			String content = countOk + " entrainement(s) envoyé(s) sans erreur.";
+			if (countFailed > 0) {
+				content += "\n" + countFailed + " échec(s).";
+				if (firstFailure != null && !firstFailure.isBlank()) {
+					content += "\n" + firstFailure;
+				}
+			}
+			alert.setContentText(content);
+			alert.showAndWait();
+		}
     }
     
     private void readActivities() {
@@ -233,11 +240,11 @@ public class KikStravaController implements Initializable, LicenceEventListener 
     		LocalDate startDate = startDatePicker.getValue();
     		LocalDate endDate = endDatePicker.getValue();
     		
-    		// Get kikourou data from the same period
-    		Map<LocalDate, KikourouActivity> kikActivities = kikourouService.searchActivities(startDate, endDate);
+			List<KikourouActivity> kikActivities =
+					kikourouService.searchActivitiesInRange(startDate, endDate);
     		
     		if ( stravaRadioButton.isSelected() ) {
-			if  ( !stravaService.isLicenceCodeInit() ) {
+			if  ( !stravaService.isAuthenticated() ) {
 				// Get new strava authorisation
 				verifyStravaLicence();
 			}
@@ -272,70 +279,110 @@ public class KikStravaController implements Initializable, LicenceEventListener 
     	this.hostServices.showDocument(stravaService.getAuthUrl());
 	}
 	
-	private void readStravaActivities(Map<LocalDate, KikourouActivity> kikActivities, LocalDate startDate, LocalDate endDate) 
+	private void readStravaActivities(List<KikourouActivity> kikActivities, LocalDate startDate, LocalDate endDate)
 		throws JsonParseException, JsonMappingException, IOException, ServiceException {
 		StravaActivity[] resActivities = stravaService.searchActivities(startDate, endDate, 1, maxReturnSpinner.getValueFactory().getValue());
-		
-		if ( resActivities != null && resActivities.length > 0) {
-			for ( StravaActivity stravaActivity : resActivities ) {
-				activities.add(stravaActivity);
-				
-				LocalDate localDate = stravaActivity.getStartDateLocal().toLocalDate();
-				
-				if ( kikActivities.containsKey(localDate) ) {
-					stravaActivity.setIsTransfer(false);
-				}
-			}
-			// si entrainement meme date => on decoche
-			importBtn.setDisable(false);
-		}
-		else {
-			importBtn.setDisable(true);
-		}
+		addActivities(resActivities, kikActivities);
 	}
 	
-	private void readMovescountActivities(Map<LocalDate, KikourouActivity> kikActivities, LocalDate startDate, LocalDate endDate) 
+	private void readMovescountActivities(List<KikourouActivity> kikActivities, LocalDate startDate, LocalDate endDate)
 		throws JsonParseException, JsonMappingException, IOException {
 		MovescountActivity[] movescountActivities = movescountService.searchActivities(startDate, endDate, maxReturnSpinner.getValueFactory().getValue());
-		
-		if ( movescountActivities != null && movescountActivities.length > 0) {
-			for ( MovescountActivity movescountActivity : movescountActivities ) {
-				activities.add(movescountActivity);
-				
-				LocalDate localDate = movescountActivity.getStartDateLocal().toLocalDate();
-				
-				if ( kikActivities.containsKey(localDate) ) {
-					movescountActivity.setIsTransfer(false);
-				}
-
-			}
-			
-			importBtn.setDisable(false);
-		}
-		else {
-			importBtn.setDisable(true);
-		}
+		addActivities(movescountActivities, kikActivities);
 	}
 
-	private void readGarminActivities(Map<LocalDate, KikourouActivity> kikActivities, LocalDate startDate, LocalDate endDate)
+	private void readGarminActivities(List<KikourouActivity> kikActivities, LocalDate startDate, LocalDate endDate)
 		throws JsonParseException, JsonMappingException, IOException, ServiceException {
 		GarminActivity[] garminActivities = garminService.searchActivities(startDate, endDate, maxReturnSpinner.getValueFactory().getValue());
+		addActivities(garminActivities, kikActivities);
+	}
 
-		if ( garminActivities != null && garminActivities.length > 0) {
-			for ( GarminActivity garminActivity : garminActivities ) {
-				activities.add(garminActivity);
-
-				LocalDate localDate = garminActivity.getStartDateLocal().toLocalDate();
-
-				if ( kikActivities.containsKey(localDate) ) {
-					garminActivity.setIsTransfer(false);
-				}
-			}
-			importBtn.setDisable(false);
-		}
-		else {
+	private void addActivities(
+			KikourouActivity[] sourceActivities, List<KikourouActivity> kikourouActivities) {
+		if (sourceActivities == null || sourceActivities.length == 0) {
 			importBtn.setDisable(true);
+			return;
 		}
+
+		List<ActivityFingerprint> existingActivities = new ArrayList<>();
+		for (KikourouActivity activity : kikourouActivities) {
+			existingActivities.add(ActivityFingerprint.from(activity));
+		}
+		List<ActivityFingerprint> unmatchedKikourouActivities = new ArrayList<>(existingActivities);
+		List<ActivityFingerprint> sourceActivitiesSeen = new ArrayList<>();
+		int notToTransferCount = 0;
+		int transferCount = 0;
+		for (KikourouActivity activity : sourceActivities) {
+			ActivityFingerprint fingerprint = ActivityFingerprint.from(activity);
+			int matchIndex = findKikourouMatch(unmatchedKikourouActivities, fingerprint);
+			boolean alreadyInKikourou = matchIndex >= 0;
+			if (alreadyInKikourou) {
+				unmatchedKikourouActivities.remove(matchIndex);
+			}
+			boolean duplicateSourceActivity = sourceActivitiesSeen.stream()
+					.anyMatch(existing -> existing.matches(fingerprint));
+			boolean isNew = !alreadyInKikourou && !duplicateSourceActivity;
+			activity.setIsTransfer(isNew);
+			activities.add(activity);
+			sourceActivitiesSeen.add(fingerprint);
+			if (isNew) {
+				transferCount++;
+			} else {
+				notToTransferCount++;
+			}
+
+			if (isNew) {
+				logPreselectionMismatch(activity, fingerprint, existingActivities);
+			}
+		}
+		System.out.printf(
+				"Preselection %s: %d source activities, %d Kikourou activities, "
+						+ "%d not selected, %d to transfer.%n",
+				sourceActivities[0].getSource(), sourceActivities.length, existingActivities.size(),
+				notToTransferCount, transferCount);
+		importBtn.setDisable(false);
+	}
+
+	private int findKikourouMatch(
+			List<ActivityFingerprint> kikourouActivities, ActivityFingerprint sourceActivity) {
+		for (int i = 0; i < kikourouActivities.size(); i++) {
+			ActivityFingerprint existing = kikourouActivities.get(i);
+			if (existing.matches(sourceActivity)) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	private void logPreselectionMismatch(
+			KikourouActivity source,
+			ActivityFingerprint fingerprint,
+			List<ActivityFingerprint> existingActivities) {
+		List<ActivityFingerprint> sameDate = existingActivities.stream()
+				.filter(existing -> existing.date().equals(fingerprint.date()))
+				.sorted((first, second) -> {
+					long firstDistanceDifference = Math.abs(
+							first.distanceMeters() - fingerprint.distanceMeters());
+					long secondDistanceDifference = Math.abs(
+							second.distanceMeters() - fingerprint.distanceMeters());
+					int distanceComparison = Long.compare(
+							firstDistanceDifference, secondDistanceDifference);
+					if (distanceComparison != 0) {
+						return distanceComparison;
+					}
+					long firstDurationDifference = Math.abs(
+							(long) first.elapsedSeconds() - fingerprint.elapsedSeconds());
+					long secondDurationDifference = Math.abs(
+							(long) second.elapsedSeconds() - fingerprint.elapsedSeconds());
+					return Long.compare(firstDurationDifference, secondDurationDifference);
+				})
+				.toList();
+		System.out.printf("Preselection mismatch %s: %s %ds/%dm; %d Kikourou records on date.%n",
+				source.getSource(), fingerprint.date(), fingerprint.elapsedSeconds(),
+				fingerprint.distanceMeters(), sameDate.size());
+		sameDate.stream().limit(3).forEach(existing -> System.out.printf(
+				"  Kikourou candidate: %ds/%dm.%n",
+				existing.elapsedSeconds(), existing.distanceMeters()));
 	}
 
 	@Override

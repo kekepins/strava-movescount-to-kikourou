@@ -5,12 +5,11 @@ import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.*;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import javax.net.ssl.HttpsURLConnection;
 
 import kikstrava.model.Config;
 import kikstrava.model.KikourouActivity;
@@ -22,35 +21,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import javax.net.ssl.*;
-
 public class KikourouService {
-
-	static private SSLSocketFactory socketFactory() {
-		TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
-
-			public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-				return new X509Certificate[0];
-			}
-
-			@Override
-			public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
-			}
-
-			public void checkServerTrusted(X509Certificate[] certs, String authType) {
-			}
-		}};
-
-		try {
-			SSLContext sslContext = SSLContext.getInstance("SSL");
-			sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
-			SSLSocketFactory result = sslContext.getSocketFactory();
-
-			return result;
-		} catch (Exception e) {
-			throw new RuntimeException("Failed to create a SSL socket factory", e);
-		}
-	}
 
 	private final static String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36";
 	
@@ -60,8 +31,6 @@ public class KikourouService {
 	private final String password;
 	private boolean isConnect = false;
 	private String kikoureurId;
-	
-	private final static String FROM_LAST_YEAR = "https://www.kikourou.net/entrainement/navigation.php?nav1an=1&kikoureur=";
 	
 	//navannee=2016&navmois=12
 	
@@ -75,8 +44,6 @@ public class KikourouService {
 		// Get sid 
 		String sid = getSid();
 
-		System.out.println("Connect kikourou with sid [" + sid + "]");
-
 		if ( sid == null ) {
 			throw new Exception("Impossible de récupérer le sid");
 		}
@@ -84,11 +51,8 @@ public class KikourouService {
 		// Init sessions cookies
 		String url =  "https://www.kikourou.net/forum/ucp.php?mode=login";
 
-		System.out.println("User " + user + " password " + password );
 		// url encode
 		String postParams = "username=" + URLEncoder.encode(user, "UTF-8") + "&password=" + URLEncoder.encode(password, "UTF-8") + "&login=Connexion&sid=" + sid;
-
-		System.out.println("Post params " + postParams);
 
 		String result = sendPost(url, postParams);
 		//System.out.println("Connect return");
@@ -100,17 +64,19 @@ public class KikourouService {
 	private  void findKiroureurId() throws Exception {
 		String html = sendGet("https://www.kikourou.net");
 		Document document = Jsoup.parse(html);
-		Elements liElts = document.select("ul#nav > li");
-
-		Element espacePerso = liElts.get(4);
-		Elements espacePersoUl =espacePerso.select("ul > li");
-
-		Element a = espacePersoUl.get(2).child(0);
-		String relHref = a.attr("href"); // == "/"
-		int index =  relHref.indexOf("kikoureur=");
-		this.kikoureurId = relHref.substring(index + 10);
-
-		System.out.println("Kikoureur id found [" + kikoureurId + "]");
+		for (Element link : document.select("ul#nav a[href]")) {
+			String href = link.attr("href");
+			int index = href.indexOf("kikoureur=");
+			if (index >= 0) {
+				String candidate = href.substring(index + "kikoureur=".length()).split("[&#]", 2)[0];
+				if (candidate.matches("\\d+")) {
+					this.kikoureurId = candidate;
+					System.out.println("Kikourou diary link selected.");
+					return;
+				}
+			}
+		}
+		throw new ServiceException("Could not find the authenticated Kikourou diary link");
 	}
 	
 	/*public void addActivities(KikourouActivity[] activities) throws Exception {
@@ -131,6 +97,9 @@ public class KikourouService {
 		}
 		
 		LocalDateTime startDate = activity.getStartDateLocal();
+		if (startDate == null) {
+			throw new IllegalArgumentException("Activity start date is missing");
+		}
 		
 		int[] elapsed = Utils.getSecondsToHMS(activity.getElapsedTime());
 		
@@ -151,54 +120,92 @@ public class KikourouService {
 	}
 	
 	public Map<LocalDate, KikourouActivity> searchActivities(LocalDate start, LocalDate end ) throws Exception {
+		Map<LocalDate, KikourouActivity> result = new HashMap<>();
+		for (KikourouActivity activity : searchAllActivities()) {
+			result.put(activity.getStartDateLocal().toLocalDate(), activity);
+		}
+		return result;
+	}
 
-		System.out.println("Search activities " + start + " " + end);
-		if ( !isConnect ) {
+	public List<KikourouActivity> searchAllActivities() throws Exception {
+		LocalDate end = LocalDate.now();
+		return searchActivitiesInRange(end.minusYears(1), end);
+	}
+
+	public List<KikourouActivity> searchActivitiesInRange(LocalDate start, LocalDate end)
+			throws Exception {
+		if (start == null || end == null) {
+			return searchAllActivities();
+		}
+		if (start.isAfter(end)) {
+			throw new IllegalArgumentException("Start date must not be after end date");
+		}
+		if (!isConnect) {
 			connect();
 		}
-		
-		if ( kikoureurId == null ) {
+		if (kikoureurId == null) {
 			findKiroureurId();
 		}
-		
-		Map<LocalDate, KikourouActivity> result = new HashMap<>();
-		
-		try {
-			String url = FROM_LAST_YEAR  + kikoureurId;
-			String html = sendGet(url);
 
-			//System.println("html " + html);
-
-			Document document = Jsoup.parse(html);
-
-			Element table = document.getElementsByClass("calendrier").first();
-
-			if ( table != null ) {
-
-				Elements rows = table.select("tr");
-
-				for (int i = 1; i < rows.size()-6; i++) { //first row is the col names so skip it.
-					Element row = rows.get(i);
-					Elements cols = row.select("td");
-					String strDate = cols.get(0).text();
-					LocalDate ldt = parseDate(strDate);
-
-					//System.out.println(cols.get(0).text());
-					String desc = cols.get(1).text();
-					int parse = parseElapse(cols.get(4).text());
-					float distance = Float.parseFloat(cols.get(5).text());
-					//System.out.println("dist " + distance); // distance
-
-					KikourouActivityImpl kikActivity  = new KikourouActivityImpl(ldt, desc, distance, parse);
-					result.put(ldt, kikActivity);
-
+		List<KikourouActivity> result = new ArrayList<>();
+		LocalDate month = start.withDayOfMonth(1);
+		LocalDate lastMonth = end.withDayOfMonth(1);
+		while (!month.isAfter(lastMonth)) {
+			String url = "https://www.kikourou.net/entrainement/navigation.php"
+					+ "?navannee=" + month.getYear()
+					+ "&navmois=" + month.getMonthValue()
+					+ "&kikoureur=" + kikoureurId;
+			for (KikourouActivity activity : parseActivities(sendGet(url))) {
+				LocalDate activityDate = activity.getStartDateLocal().toLocalDate();
+				if (!activityDate.isBefore(start) && !activityDate.isAfter(end)) {
+					result.add(activity);
 				}
 			}
+			month = month.plusMonths(1);
 		}
-		catch( Throwable t ) {
-			t.printStackTrace();
+		System.out.printf("Kikourou date range %s to %s: %d activities.%n",
+				start, end, result.size());
+		return result;
+	}
+
+	private List<KikourouActivity> parseActivities(String html) throws Exception {
+		List<KikourouActivity> result = new ArrayList<>();
+		Document document = Jsoup.parse(html);
+		String heading = document.select("h1, h2, h3").stream()
+				.map(Element::text)
+				.filter(text -> text.startsWith("Les entrainements"))
+				.findFirst()
+				.orElse("");
+		if (!heading.startsWith("Les entrainements de ")) {
+			throw new ServiceException(
+					"Kikourou did not return a user-specific training diary");
+		}
+		System.out.println("Kikourou user diary confirmed.");
+		Element table = document.getElementsByClass("calendrier").first();
+		if (table == null) {
+			throw new ServiceException("Kikourou training calendar was not found");
 		}
 
+		Elements rows = table.select("tr");
+		for (Element row : rows) {
+			Elements cols = row.select("td");
+			if (cols.size() < 6) {
+				continue;
+			}
+			String strDate = cols.get(0).text();
+			LocalDate date = parseDate(strDate);
+			if (date == null) {
+				if (!strDate.matches("\\d{1,2}\\s+\\S+\\s+\\d{2,4}")) {
+					continue;
+				}
+				throw new ServiceException("Unable to parse Kikourou activity date: " + strDate);
+			}
+
+			String desc = cols.get(1).text();
+			int elapsed = parseElapse(cols.get(4).text());
+			float distance = Float.parseFloat(cols.get(5).text());
+			result.add(new KikourouActivityImpl(date, desc, distance, elapsed));
+		}
 
 		return result;
 	}
@@ -207,28 +214,11 @@ public class KikourouService {
 
 	private String sendPost(String url, String postParams) throws Exception {
 
-		SSLContext ctx = SSLContext.getInstance("TLS");
-		ctx.init(new KeyManager[0], new TrustManager[]{new TrustAnyTrustManager()}, new java.security.SecureRandom());
-		//SSLContext.setDefault(ctx);
-
-		//System.out.println("Post request to " + url);
-		//System.out.println("Post parameters : " + postParams);
-
 		HttpsURLConnection.setFollowRedirects(true);
 
 		URL obj = new URL(url);
 		HttpsURLConnection conn = (HttpsURLConnection) obj.openConnection();
 
-		HostnameVerifier allHostsValid = new HostnameVerifier() {
-
-			public boolean verify(String hostname, SSLSession session) {
-
-				//System.out.println("verify");
-				return true;
-			}
-		};
-		conn.setHostnameVerifier(allHostsValid);
-		conn.setSSLSocketFactory(ctx.getSocketFactory());
 		conn.setInstanceFollowRedirects(false);
 		conn.setFollowRedirects(true);
 
@@ -282,19 +272,6 @@ public class KikourouService {
 	}
 	
 	private String sendGet(String url) throws Exception {
-
-		System.out.println("Send GET request to " + url);
-
-		SSLContext ctx = SSLContext.getInstance("TLS");
-		ctx.init(new KeyManager[0], new TrustManager[]{new TrustAnyTrustManager()}, new java.security.SecureRandom());
-		SSLContext.setDefault(ctx);
-		HttpsURLConnection.setDefaultSSLSocketFactory(ctx.getSocketFactory());
-		HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
-			@Override
-			public boolean verify(String arg0, SSLSession arg1) {
-				return true;
-			}
-		});
 
 		URL obj = new URL(url);
 
@@ -366,7 +343,6 @@ public class KikourouService {
 		Connection.Response response =
                  Jsoup.connect(url)
 				 //.proxy(Config.getConfig().getProxyHost(), Integer.parseInt(Config.getConfig().getProxyPort()))
-				 .sslSocketFactory(socketFactory())
                  .userAgent("Mozilla/5.0")
                  .method(Connection.Method.GET)
                  .followRedirects(true)
@@ -467,6 +443,7 @@ public class KikourouService {
 			encode("idparcours", "" ) +
 			encode("etape", "3") ;
 
+		sendGet(url + "?init=1");
 		sendPost(url, postParams);
 
 		

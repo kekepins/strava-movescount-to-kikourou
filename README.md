@@ -138,13 +138,50 @@ Première version uniquement l'import depuis strava.
 # Installation
 
 ## Dézipper dans un répertoire
-On télécharge la dernière version de l'application ici : https://github.com/kekepins/strava/raw/master/dist/kikstrava-1.9.0.zip
+On télécharge la dernière version de l'application ici : https://github.com/kekepins/strava-movescount-to-kikourou/raw/master/dist/kikstrava-1.9.0.zip
 
-On dézippe dans un répertoire.
+On dézippe l'archive dans un répertoire et on renseigne `conf/stravakik.conf`.
 
-## Démarrage double clic sur : kikstrava.bat
+## Démarrage
 
-Attention avant de faire ça **il faut configurer le fichier stravakik.conf**
+Lancer `KikStrava.exe` depuis le répertoire extrait. Aucun Java n'est requis.
+
+# Synchronisation quotidienne (Windows)
+
+Le livrable Windows autonome inclut `sync-daily.bat` et `install-daily-sync.ps1`.
+Configure d'abord `conf/stravakik.conf` avec Kikourou et au moins une source. Pour Strava, ouvre une première fois
+l'application graphique et autorise l'accès au compte.
+
+Depuis le dossier contenant `KikStrava.exe`, enregistre la tâche quotidienne à 06:00 :
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\install-daily-sync.ps1 -Source Garmin
+```
+
+La source par défaut est Garmin. Pour utiliser Strava ou les deux sources, choisis
+`-Source Strava` ou `-Source Both`. Pour choisir une autre heure, ajoute par exemple
+`-At "20:00"`.
+Le lancement manuel accepte aussi `KikStrava.exe --sync --source=garmin`,
+`--source=strava` ou `--source=both`.
+La tâche s'exécute sous le compte Windows courant quand celui-ci est connecté; si l'ordinateur
+était indisponible à l'heure prévue, l'exécution est reportée à son prochain démarrage.
+Les synchronisations sont journalisées dans `%LOCALAPPDATA%\KikStrava\sync.log`.
+
+Pour tester manuellement l'import Garmin sur les trois activités les plus récentes,
+exécute `KikStrava.exe --test-import=3`. Les activités déjà présentes sont ignorées;
+les nouvelles sont vérifiées dans le calendrier Kikourou. La commande en lecture seule
+`KikStrava.exe --verify-import=3` permet de refaire uniquement la vérification.
+Pour vérifier en lecture seule les dernières activités Strava sans les importer,
+exécute `KikStrava.exe --verify-strava=3` (ou remplace `3` par le nombre à vérifier).
+
+La synchronisation examine les 30 derniers jours et autorise plusieurs activités le même jour.
+Elle évite les réimportations en comparant la date, la durée et la distance (arrondie à 100 m),
+y compris entre Strava et Garmin.
+Pour supprimer la tâche, exécute :
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\install-daily-sync.ps1 -Uninstall
+```
 
 # Configuration
 
@@ -214,7 +251,7 @@ et en fournissant JavaFX via `--module-path` (classifier natif détecté automat
 - Windows : `build-app.bat` → `target/dist/KikStrava\KikStrava.exe` (+ `.msi` si WiX Toolset installé)
 
 Ces scripts utilisent `jpackage` (fourni par le JDK ≥ 17). La configuration à remplir par
-l'utilisateur se trouve dans le livrable sous `app/conf/stravakik.conf`.
+l'utilisateur se trouve à la racine du livrable sous `conf/stravakik.conf`.
 
 > Astuce repo d'entreprise : si Maven est configuré avec un `settings.xml` spécifique, renseigne-le
 > via la variable `MVN_SETTINGS` en haut des scripts `.bat`, ou l'option `-s` pour les scripts `.sh`.

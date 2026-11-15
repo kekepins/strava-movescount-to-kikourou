@@ -18,7 +18,6 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -80,13 +79,7 @@ public class StravaV3Service {
 		}
 		
 		// Expired or less than one hour left
-		System.out.println("[Strava] Now minus 1 hour " +  LocalDateTime.now().minusHours(2));
-		System.out.println("[Strava token Expiration] " +  tokenInfo.getExpirationDate());
-
 		LocalDateTime expirationDate = tokenInfo.getExpirationDate();
-
-		System.out.println("[Strava token Expiration] " + expirationDate.getYear()  + "|" + expirationDate.getMonthValue() + "|" + expirationDate.getDayOfMonth() + "|" + expirationDate.getHour() + "|" + expirationDate.getMinute() + "|" + expirationDate.getSecond()  );
-		System.out.println("Now:" + LocalDateTime.now().getYear()  + "|" + LocalDateTime.now().getMonthValue() + "|" + LocalDateTime.now().getDayOfMonth() + "|" + LocalDateTime.now().getHour() + "|" + LocalDateTime.now().getMinute() + "|" + LocalDateTime.now().getSecond()  );
 
 		if ( expirationDate.isBefore(LocalDateTime.now() )) {
 		// check if token is expired or is about to expire
@@ -94,8 +87,6 @@ public class StravaV3Service {
 
 		//if ( LocalDateTime.now().minusHours(2).isAfter(tokenInfo.getExpirationDate()) )  {
 			// should update
-			System.out.println("[Strava] Token expired!!! " + tokenInfo.getExpirationDate());
-			
 			tokenInfo = updateToken();
 			
 			if (tokenInfo == null) {
@@ -109,15 +100,13 @@ public class StravaV3Service {
 	}
 
 	
-	private StravaTokenInfo updateToken() {
-		// TODO Auto-generated method stub
+	private StravaTokenInfo updateToken() throws ServiceException {
 		/*curl -X POST https://www.strava.com/api/v3/oauth/token \
 			  -d client_id=ReplaceWithClientID \
 			  -d client_secret=ReplaceWithClientSecret \
 			  -d grant_type=refresh_token \
 			  -d refresh_token=ReplaceWithRefreshToken*/
 
-		System.out.println("[Strava] Update token");
 		StringBuilder json = new StringBuilder();
 
 		try {
@@ -161,12 +150,9 @@ public class StravaV3Service {
 				StravaTokenInfo tokenInfo = null;
 				if ( json != null ) {
 				
-					// json to Token info :
-					System.out.println(json);
 					tokenInfo =  objectMapper.readValue(json.toString(), StravaTokenInfo.class);
 					//token = tokenInfo.getAccess_token();
 					
-					System.out.println("[Stava] New refresh Token: " + tokenInfo);
 				}
 				
 				return tokenInfo;
@@ -175,15 +161,12 @@ public class StravaV3Service {
 	        	// pbm 
 	        	BufferedReader br = new BufferedReader(new InputStreamReader(conn.getErrorStream(), StandardCharsets.UTF_8));
 	        	
-	        	String responseBody = br.lines().collect(Collectors.joining());
-				System.out.println("Error during auth body http [" + statusCode + "]:" + responseBody);
-	        	return null;
+		br.close();
+				throw new ServiceException("Strava token refresh failed with HTTP " + statusCode);
 	        }
 
 		} catch (IOException e) {
-
-			e.printStackTrace();
-			return null;
+			throw new ServiceException("Strava token refresh failed: " + e.getMessage());
 		}			  
 	}
 
@@ -209,8 +192,7 @@ public class StravaV3Service {
 			conn.setRequestProperty("Authorization", "Bearer " + this.tokenInfo.getAccess_token());
 
 			if (conn.getResponseCode() != 200) {
-				throw new RuntimeException(
-						"Failed : HTTP error code : " + conn.getResponseCode() + " - " + conn.getResponseMessage());
+				throw new ServiceException("Strava activity request failed with HTTP " + conn.getResponseCode());
 			}
 
 			BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8));
@@ -223,9 +205,7 @@ public class StravaV3Service {
 			conn.disconnect();
 
 		} catch (IOException e) {
-
-			e.printStackTrace();
-			return null;
+			throw new ServiceException("Strava activity request failed: " + e.getMessage());
 		}
 
 		return sb.toString();
@@ -238,7 +218,10 @@ public class StravaV3Service {
 	  * 
 	  */
 	public String getAuthUrl() {
-		return String.format(AUTH_URL + "?client_id=%s&response_type=code&scope=activity:read&redirect_uri=%s&client_secret=%s&approval_prompt=force", clientId, CALLBACK_URL, clientSecret);
+		return AUTH_URL + "?client_id=" + URLEncoder.encode(clientId, StandardCharsets.UTF_8)
+				+ "&response_type=code&scope=activity:read&redirect_uri="
+				+ URLEncoder.encode(CALLBACK_URL, StandardCharsets.UTF_8)
+				+ "&approval_prompt=force";
 	}
 	 
 
@@ -246,7 +229,6 @@ public class StravaV3Service {
 	 * Get a valid token from strava !!!!
 	 */
 	public StravaTokenInfo getToken() {
-		System.out.println("Get new token from strava");
 		StringBuilder json = new StringBuilder();
 
 		try {
@@ -294,12 +276,9 @@ public class StravaV3Service {
 				StravaTokenInfo tokenInfo = null;
 				if ( json != null ) {
 				
-					// json to Token info :
-					System.out.println(json);
 					tokenInfo =  objectMapper.readValue(json.toString(), StravaTokenInfo.class);
 					//token = tokenInfo.getAccess_token();
 					
-					System.out.println("Token: " + tokenInfo);
 				}
 				
 				return tokenInfo;
@@ -308,8 +287,8 @@ public class StravaV3Service {
 	        	// pbm 
 	        	BufferedReader br = new BufferedReader(new InputStreamReader(conn.getErrorStream(), StandardCharsets.UTF_8));
 	        	
-	        	String responseBody = br.lines().collect(Collectors.joining());
-				System.out.println("Error during auth body http [" + statusCode + "]:" + responseBody);
+		br.close();
+				System.err.println("Strava authorization failed with HTTP " + statusCode);
 	        	return null;
 	        }
 
@@ -353,7 +332,6 @@ public class StravaV3Service {
     
     public void getGpxFile(String activityId) throws JsonParseException, JsonMappingException, IOException, ServiceException {
     	 String url = "https://www.strava.com/api/v3/activities/"+activityId+"/streams/"+"time,latlng" + "?resolution=high";
-    	 System.out.println(url);
     	 
     	 String json = doGet(url);
     	 
@@ -384,84 +362,74 @@ public class StravaV3Service {
 	}
 	
 	private void readSavedInfos() {
-		// look
-		final String dir = System.getProperty("user.dir");
-		
-		// strava code
-		Path pathCode = Paths.get(dir, ".stravacode");
-		
-		if (Files.exists(pathCode)) {
-
-			try {
-				List<String> lines = Files.readAllLines(pathCode);
-				code = lines.get(0);
-				
-				System.out.println("Code found " + code);
-			} 
-			catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		try {
+			Path codeFile = stateFile(".stravacode");
+			if (Files.exists(codeFile)) {
+				List<String> lines = Files.readAllLines(codeFile, StandardCharsets.UTF_8);
+				if (!lines.isEmpty()) {
+					code = lines.get(0);
+				}
 			}
-		}
-		
-		// strava token
-		Path pathToken = Paths.get(dir, ".stravatoken");
-		if (Files.exists(pathToken)) {
-			try {
-				List<String> lines = Files.readAllLines(pathToken);
-				String accessToken = lines.get(0);
-				String refreshToken = lines.get(1);
-				String expiration = lines.get(2);
-				
-				System.out.println("Token " + accessToken  + "|" + refreshToken + "|" + expiration);
+
+			Path tokenFile = stateFile(".stravatoken");
+			if (Files.exists(tokenFile)) {
+				List<String> lines = Files.readAllLines(tokenFile, StandardCharsets.UTF_8);
+				if (lines.size() < 3) {
+					throw new IOException("Saved Strava token file is incomplete");
+				}
 				tokenInfo = new StravaTokenInfo();
-				tokenInfo.setAccess_token(accessToken);
-				tokenInfo.setRefresh_token(refreshToken);
-				tokenInfo.setExpires_at(Long.parseLong(expiration));
-			} 
-			catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				tokenInfo.setAccess_token(lines.get(0));
+				tokenInfo.setRefresh_token(lines.get(1));
+				tokenInfo.setExpires_at(Long.parseLong(lines.get(2)));
 			}
-
+		} catch (IOException | NumberFormatException e) {
+			throw new IllegalStateException("Unable to read saved Strava authorization", e);
 		}
-		
-		
 	}
 	
 	public void writeCurrentCode() {
-		final String dir = System.getProperty("user.dir");
-		Path path = Paths.get(dir, ".stravacode");
 		try {
-			if (Files.exists(path)) {
-			    Files.delete(path);
-			}
-			Files.write(path, code.getBytes());
+			Files.writeString(stateFile(".stravacode"), code, StandardCharsets.UTF_8);
 		} 
 		catch (IOException e) {
-			e.printStackTrace();
+			throw new IllegalStateException("Unable to save Strava authorization", e);
 		}
 	}
 	
 	public void writeCurrentToken(StravaTokenInfo tokenInfo) {
-		final String dir = System.getProperty("user.dir");
-		Path path = Paths.get(dir, ".stravatoken");
 		try {
-			if (Files.exists(path)) {
-			    Files.delete(path);
-			}
-			
 			Iterable<String> iterable = Arrays.asList(tokenInfo.getAccess_token(), tokenInfo.getRefresh_token(), "" + tokenInfo.getExpires_at());
-		    Files.write(path, iterable);
+		    Files.write(stateFile(".stravatoken"), iterable, StandardCharsets.UTF_8);
 		} 
 		catch (IOException e) {
-			e.printStackTrace();
+			throw new IllegalStateException("Unable to save Strava token", e);
 		}
+	}
+
+	private Path stateFile(String fileName) throws IOException {
+		String localAppData = System.getenv("LOCALAPPDATA");
+		Path stateDirectory = localAppData == null || localAppData.isBlank()
+				? Paths.get(System.getProperty("user.home"), ".kikstrava")
+				: Paths.get(localAppData, "KikStrava");
+		Files.createDirectories(stateDirectory);
+
+		Path stateFile = stateDirectory.resolve(fileName);
+		Path legacyFile = Paths.get(System.getProperty("user.dir"), fileName);
+		if (!Files.exists(stateFile) && Files.exists(legacyFile)) {
+			Files.copy(legacyFile, stateFile);
+		}
+		return stateFile;
 	}
 
 	
 	public boolean isLicenceCodeInit() {
 		return code != null;
+	}
+
+	public boolean isAuthenticated() {
+		return code != null && tokenInfo != null
+				&& tokenInfo.getRefresh_token() != null
+				&& !tokenInfo.getRefresh_token().isBlank();
 	}
 
 

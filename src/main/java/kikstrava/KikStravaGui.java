@@ -7,8 +7,8 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import kikstrava.controller.KikStravaController;
-import kikstrava.model.Config;
 import kikstrava.service.ConfigManager;
+import kikstrava.service.DailySync;
 
 public class KikStravaGui extends Application {
 	@Override
@@ -16,18 +16,7 @@ public class KikStravaGui extends Application {
 		try {
 			
 			ConfigManager.init();
-
-			//System.setProperty("java.net.preferIPv4Stack", "true");
-			
-			// Set proxy
-			if ( Config.getConfig().isProxy() ) {
-
-				System.out.println("Setting proxy " + Config.getConfig().getProxyHost() + ":" + Config.getConfig().getProxyPort());
-				System.setProperty("http.proxyHost", Config.getConfig().getProxyHost());
-			    System.setProperty("http.proxyPort",  Config.getConfig().getProxyPort());
-				System.setProperty("https.proxyHost", Config.getConfig().getProxyHost());
-			    System.setProperty("https.proxyPort", Config.getConfig().getProxyPort());
-			}
+			ConfigManager.applyProxySettings();
 			
 			FXMLLoader loader = new FXMLLoader();
 			
@@ -56,6 +45,51 @@ public class KikStravaGui extends Application {
 	}
 	
 	public static void main(String[] args) {
+		if (args.length == 1 && "--test-import=3".equals(args[0])) {
+			try {
+				DailySync.testImportLatestThreeGarmin();
+				System.exit(0);
+			} catch (Exception e) {
+				System.err.println("Three-activity test failed: " + e.getMessage());
+				e.printStackTrace(System.err);
+				System.exit(1);
+			}
+			return;
+		}
+		if (args.length == 1 && "--verify-import=3".equals(args[0])) {
+			try {
+				DailySync.verifyLatestThreeGarmin();
+				System.exit(0);
+			} catch (Exception e) {
+				System.err.println("Three-activity verification failed: " + e.getMessage());
+				e.printStackTrace(System.err);
+				System.exit(1);
+			}
+			return;
+		}
+		if (args.length == 1 && args[0].startsWith("--verify-strava=")) {
+			try {
+				int count = Integer.parseInt(args[0].substring("--verify-strava=".length()));
+				DailySync.verifyLatestStrava(count);
+				System.exit(0);
+			} catch (Exception e) {
+				System.err.println("Read-only Strava verification failed: " + e.getMessage());
+				e.printStackTrace(System.err);
+				System.exit(1);
+			}
+			return;
+		}
+		if (args.length > 0 && "--sync".equals(args[0])) {
+			try {
+				DailySync.run(DailySync.sourceFromArgs(args));
+				System.exit(0);
+			} catch (Exception e) {
+				System.err.println("Daily synchronization failed: " + e.getMessage());
+				e.printStackTrace(System.err);
+				System.exit(1);
+			}
+			return;
+		}
 		launch(args);
 	}
 }

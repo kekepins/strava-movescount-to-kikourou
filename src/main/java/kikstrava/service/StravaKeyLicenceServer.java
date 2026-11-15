@@ -2,6 +2,8 @@ package kikstrava.service;
 
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 
 import com.sun.net.httpserver.HttpServer;
 
@@ -34,33 +36,24 @@ public class StravaKeyLicenceServer {
 				// A response coming from strava !!!!!
 				// Let's extract the precious code 
 				String query = httpExchange.getRequestURI().getQuery();
-				System.out.println(query);
 				
-				String responseStr = "";
+				String responseStr;
+				boolean authorizationSucceeded = false;
 				
-				if ( query != null && query.contains("code=")) {
-					// Extract
-					
-					int idx1 = query.indexOf("code=");
-					int idx2 = query.indexOf("&", idx1);
-					String code =   query.substring(idx1 + 5, idx2);
-					System.out.println("Code:" + code);
+				String code = getQueryParameter(query, "code");
+				if ( code != null && !code.isBlank()) {
 					stravaService.setCode(code);
-					//stravaService.setTokenInfo(tokenInfo);
 					
-					// init the token
 					StravaTokenInfo tokenInfo = stravaService.getToken();
-					stravaService.setTokenInfo(tokenInfo);
-					responseStr += "Strava authorisation OK !!!! \r\n";
-					responseStr += "Je pense que tout devrait marcher maintenant \r\n";
-					responseStr += tokenInfo.getAccess_token() + "\r\n";
-					responseStr += tokenInfo.getAthlete().getFirstname()  + "\r\n";
-					responseStr += tokenInfo.getAthlete().getLastname() + "\r\n";
-					responseStr += tokenInfo.getAthlete().getUsername() + "\r\n";
-					
-					// save code for the next time 
-					stravaService.writeCurrentCode();
-					stravaService.writeCurrentToken(tokenInfo);
+					if (tokenInfo == null || tokenInfo.getRefresh_token() == null) {
+						responseStr = "Strava authorization failed. Return to the application and try again.";
+					} else {
+						stravaService.setTokenInfo(tokenInfo);
+						stravaService.writeCurrentCode();
+						stravaService.writeCurrentToken(tokenInfo);
+						responseStr = "Strava authorization successful. You can close this page.";
+						authorizationSucceeded = true;
+					}
 				}
 				else {
 					responseStr = "Problème avec l'autorisation Strava";
@@ -75,8 +68,9 @@ public class StravaKeyLicenceServer {
 				out.write(response);
 				out.close();
 				
-				// Callback, license is now validated
-				licenceEventListener.onLicenseValidated();
+				if (authorizationSucceeded) {
+					licenceEventListener.onLicenseValidated();
+				}
 			});
 
 			server.start();
@@ -85,6 +79,19 @@ public class StravaKeyLicenceServer {
 		} catch (Throwable tr) {
 			tr.printStackTrace();
 		}
+	}
+
+	private String getQueryParameter(String query, String name) {
+		if (query == null) {
+			return null;
+		}
+		for (String parameter : query.split("&")) {
+			String[] pair = parameter.split("=", 2);
+			if (pair.length == 2 && name.equals(pair[0])) {
+				return URLDecoder.decode(pair[1], StandardCharsets.UTF_8);
+			}
+		}
+		return null;
 	}
 	
 	public void stop() {

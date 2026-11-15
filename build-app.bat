@@ -6,7 +6,7 @@ REM     target\dist\KikStrava\        (app-image : KikStrava.exe + runtime embar
 REM     target\dist\KikStrava-*.msi   (installeur, si WiX Toolset est installe)
 REM
 REM  Aucun Java requis sur la machine cible : runtime Java + JavaFX embarques.
-REM  La config se trouve dans app\conf\stravakik.conf (template vide a remplir :
+REM  La config se trouve dans conf\stravakik.conf (template vide a remplir :
 REM  kikourou, strava, garmin).
 REM
 REM  Prerequis :
@@ -44,17 +44,11 @@ set FXDIR=%M2_REPO%\org\openjfx
 set FXMP=%FXDIR%\javafx-base\%JFX_V%\javafx-base-%JFX_V%-%CLS%.jar;%FXDIR%\javafx-graphics\%JFX_V%\javafx-graphics-%JFX_V%-%CLS%.jar;%FXDIR%\javafx-controls\%JFX_V%\javafx-controls-%JFX_V%-%CLS%.jar;%FXDIR%\javafx-fxml\%JFX_V%\javafx-fxml-%JFX_V%-%CLS%.jar
 echo ^>^> JavaFX %JFX_V% (classifier %CLS%)
 
-REM Preparer l'input jpackage : jar + dossier conf (template vide)
+REM Preparer l'input jpackage : uniquement le jar
 set WORK=target\jpackage-input
 if exist "%WORK%" rmdir /s /q "%WORK%"
-mkdir "%WORK%\conf"
+mkdir "%WORK%"
 copy /y "%JAR%" "%WORK%\" >nul
-copy /y "template\stravakik.conf" "%WORK%\conf\stravakik.conf" >nul
-findstr /c:"garmin.apikey" "%WORK%\conf\stravakik.conf" >nul || (
-  echo.>> "%WORK%\conf\stravakik.conf"
-  echo # information garmin ^(cle API personnelle^)>> "%WORK%\conf\stravakik.conf"
-  echo garmin.apikey=>> "%WORK%\conf\stravakik.conf"
-)
 
 set OUT=target\dist
 if exist "%OUT%" rmdir /s /q "%OUT%"
@@ -66,16 +60,30 @@ jpackage --type app-image --name "%APP_NAME%" ^
   --main-jar "%JAR_NAME%" ^
   --main-class "%MAIN_CLASS%" ^
   --icon "src\main\resources\kikstrava\kikstrava.ico" ^
-  --module-path "%FXMP%" --add-modules javafx.controls,javafx.fxml ^
+  --module-path "%FXMP%" --add-modules javafx.controls,javafx.fxml,jdk.crypto.ec,jdk.httpserver ^
   --java-options "-Dfile.encoding=UTF-8" ^
   --win-console ^
   --dest "%OUT%"
 if errorlevel 1 goto :error
 
-REM Ajouter le dossier conf au classpath de l'app (jpackage ne met que le main-jar).
+REM Placer la configuration a la racine de l'app-image, a cote de app\
+mkdir "%OUT%\%APP_NAME%\conf"
+copy /y "template\stravakik.conf" "%OUT%\%APP_NAME%\conf\stravakik.conf" >nul
+findstr /c:"garmin.apikey" "%OUT%\%APP_NAME%\conf\stravakik.conf" >nul || (
+  echo.>> "%OUT%\%APP_NAME%\conf\stravakik.conf"
+  echo # information garmin ^(cle API personnelle^)>> "%OUT%\%APP_NAME%\conf\stravakik.conf"
+  echo garmin.apikey=>> "%OUT%\%APP_NAME%\conf\stravakik.conf"
+)
+
+copy /y "sync-daily.bat" "%OUT%\%APP_NAME%\" >nul
+if errorlevel 1 goto :error
+copy /y "install-daily-sync.ps1" "%OUT%\%APP_NAME%\" >nul
+if errorlevel 1 goto :error
+
+REM Ajouter le dossier conf racine au classpath de l'app (jpackage ne met que le main-jar).
 set CFG=%OUT%\%APP_NAME%\app\%APP_NAME%.cfg
-findstr /c:"app.classpath=$APPDIR\conf" "%CFG%" >nul || (
-  powershell -NoProfile -Command "(Get-Content -Raw '%CFG%') -replace '(app.classpath=\$APPDIR\\%JAR_NAME%)', ('$1' + [Environment]::NewLine + 'app.classpath=$APPDIR\conf') | Set-Content -NoNewline '%CFG%'"
+findstr /c:"app.classpath=$ROOTDIR\conf" "%CFG%" >nul || (
+  powershell -NoProfile -Command "(Get-Content -Raw '%CFG%') -replace '(app.classpath=\$APPDIR\\%JAR_NAME%)', ('$1' + [Environment]::NewLine + 'app.classpath=$ROOTDIR\conf') | Set-Content -NoNewline '%CFG%'"
 )
 
 echo ^>^> jpackage msi (optionnel, necessite WiX)...
@@ -93,7 +101,7 @@ echo ^>^> Livrables dans %OUT% :
 dir /b "%OUT%"
 echo.
 echo Lancement : %OUT%\%APP_NAME%\%APP_NAME%.exe
-echo Config a remplir : %OUT%\%APP_NAME%\app\conf\stravakik.conf
+echo Config a remplir : %OUT%\%APP_NAME%\conf\stravakik.conf
 goto :eof
 
 :error

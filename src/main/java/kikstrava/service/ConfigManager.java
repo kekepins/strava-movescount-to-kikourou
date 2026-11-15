@@ -3,6 +3,13 @@ package kikstrava.service;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.security.CodeSource;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 
 import kikstrava.model.Config;
@@ -31,7 +38,7 @@ public class ConfigManager {
 		try {
 			Config config = Config.getConfig();
 
-			input = ConfigManager.class.getClassLoader().getResourceAsStream("stravakik.conf");
+			input = openConfig();
 			
 			if ( input == null ) {
 				throw new Exception("Impossible de trouver le fichier stravakik.conf");
@@ -47,13 +54,11 @@ public class ConfigManager {
 			//-------------
 			String kikUser = properties.getProperty(KIK_USER_KEY);
 			if ( kikUser != null ) {
-				System.out.println("kikUser = " + kikUser);
 				config.setKikUser(kikUser.trim());
 			}
 			
 			String kikPsw = properties.getProperty(KIK_PSW_KEY);
 			if ( kikPsw != null ) {
-				System.out.println("kikPsw = " + kikPsw);
 				config.setKikPassword(kikPsw.trim());
 			}
 			
@@ -62,13 +67,11 @@ public class ConfigManager {
 			//-------------
 			String stravaSecret = properties.getProperty(STRAVA_SECRET);
 			if ( stravaSecret != null ) {
-				System.out.println("Strava secret = " + stravaSecret);
 				config.setStravaSecret(stravaSecret.trim());
 			}
 				
 			String stravaClientId = properties.getProperty(STRAVA_CLIENTID);
 			if ( stravaClientId != null ) {
-				System.out.println("Strava client id = " + stravaClientId);
 				config.setStravaClientId(stravaClientId.trim());
 			}
 			
@@ -81,8 +84,8 @@ public class ConfigManager {
 				config.setGarminApiKey(garminApiKey.trim());
 			}
 
-						if ( ( kikUser == null ) || "".equals(kikUser) || 
-					( kikPsw == null ) || "".equals(kikPsw) ) {
+			if (kikUser == null || kikUser.isBlank()
+					|| kikPsw == null || kikPsw.isBlank()) {
 				throw new Exception("Info kikourou (user ou psw) non trouvé dans la conf, fichier conf/stravakik.conf");
 			}
 			
@@ -91,15 +94,12 @@ public class ConfigManager {
 			}
 			
 			String useProxy = properties.getProperty(USE_PROXY, "false");
-			System.out.println("useProxy = " + useProxy);
 			boolean isUseProxy = "true".equals(useProxy);   // Boolean.getBoolean(useProxy);
 			config.setProxy(isUseProxy);
 			if (isUseProxy) {
 				String proxyUrl = properties.getProperty(PROXY_URL);
-				System.out.println("Proxy url = " + proxyUrl);
 				config.setProxyHost(proxyUrl);
 				String proxyPort = properties.getProperty(PROXY_PORT);
-				System.out.println("Proxy port = " + proxyPort);
 				config.setProxyPort(proxyPort);
 			}
 		} finally {
@@ -110,6 +110,53 @@ public class ConfigManager {
 					e.printStackTrace();
 				}
 			}
+		}
+	}
+
+	private static InputStream openConfig() throws Exception {
+		Path workingDirectory = Paths.get("").toAbsolutePath().normalize();
+		CodeSource codeSource = ConfigManager.class.getProtectionDomain().getCodeSource();
+		Path codeLocation = codeSource == null
+				? null
+				: Paths.get(codeSource.getLocation().toURI()).toAbsolutePath().normalize();
+		Optional<Path> configFile = findConfigFile(workingDirectory, codeLocation);
+		if (configFile.isPresent()) {
+			return Files.newInputStream(configFile.get());
+		}
+		return ConfigManager.class.getClassLoader().getResourceAsStream("stravakik.conf");
+	}
+
+	static Optional<Path> findConfigFile(Path workingDirectory, Path codeLocation) {
+		List<Path> candidates = new ArrayList<>();
+		candidates.add(workingDirectory.resolve(Paths.get("conf", "stravakik.conf")).normalize());
+
+		if (codeLocation != null) {
+			Path appDirectory = Files.isDirectory(codeLocation) ? codeLocation : codeLocation.getParent();
+			if (appDirectory != null) {
+				Path executableDirectory = appDirectory.getParent();
+				if (executableDirectory != null) {
+					candidates.add(executableDirectory.resolve(Paths.get("conf", "stravakik.conf")));
+				}
+				candidates.add(appDirectory.resolve(Paths.get("conf", "stravakik.conf")));
+			}
+		}
+		candidates.add(workingDirectory.resolve(Paths.get("app", "conf", "stravakik.conf")).normalize());
+
+		for (Path candidate : candidates) {
+			if (Files.isRegularFile(candidate)) {
+				return Optional.of(candidate);
+			}
+		}
+		return Optional.empty();
+	}
+
+	public static void applyProxySettings() {
+		Config config = Config.getConfig();
+		if (config.isProxy()) {
+			System.setProperty("http.proxyHost", config.getProxyHost());
+			System.setProperty("http.proxyPort", config.getProxyPort());
+			System.setProperty("https.proxyHost", config.getProxyHost());
+			System.setProperty("https.proxyPort", config.getProxyPort());
 		}
 	}
 
