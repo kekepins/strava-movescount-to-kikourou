@@ -1,5 +1,10 @@
 # Nouvelle version : import depuis Garmin Connect !!!!
 
+**[Télécharger KikStrava 1.9.0 pour Windows](https://github.com/kekepins/strava-movescount-to-kikourou/raw/master/dist/kikstrava-1.9.0.zip)**
+
+Dézippe l'archive, renseigne `conf/stravakik.conf`, puis lance `KikStrava.exe`.
+Aucun Java n'est requis.
+
 # Outil d'import des entrainements de Strava ou Garmin vers kikourou (https://www.kikourou.net)
 
 Transfert des entrainements de **Strava** ou **Garmin Connect** vers Kikourou.
@@ -9,10 +14,10 @@ Pour Strava on utilise des api pas documentées mais qui permettent aussi d'acc�
 Pour Garmin, on utilise l'**API personnelle Garmin Connect** (clé API personnelle) : la clé est échangée
 contre un jeton d'accès, puis on récupère la liste des activités en REST (JSON).
 
-# Comment avoir configurer strava ?
+# Comment configurer Strava ?
 
-Pour faire marcher tout ça il faut créer une application strava pour avoir le droit d'accéder aux données.
-Le but est de récupérer 2 informations le clientid et le cliensecret de l'application.
+Pour autoriser KikStrava à accéder à tes activités Strava, crée une application Strava afin
+de récupérer son identifiant client (`client ID`) et son secret (`client secret`).
 
 ## Etape 1
 
@@ -134,17 +139,6 @@ Cette version rajoute :
 ## Version 1.0
 
 Première version uniquement l'import depuis strava.
-
-# Installation
-
-## Dézipper dans un répertoire
-On télécharge la dernière version de l'application ici : https://github.com/kekepins/strava-movescount-to-kikourou/raw/master/dist/kikstrava-1.9.0.zip
-
-On dézippe l'archive dans un répertoire et on renseigne `conf/stravakik.conf`.
-
-## Démarrage
-
-Lancer `KikStrava.exe` depuis le répertoire extrait. Aucun Java n'est requis.
 
 # Synchronisation quotidienne (Windows)
 
